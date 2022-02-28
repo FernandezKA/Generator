@@ -6,19 +6,24 @@ FIFO RS232_RX;
 bool GenerateCh0;
 bool RepeatCh0;
 bool LoadCh0;
+bool autostartCh0;
 
 bool GenerateCh1;
 bool RepeatCh1;
 bool LoadCh1;
+bool autostartCh1;
 
 bool GenerateCh2;
 bool RepeatCh2;
 bool LoadCh2;
+bool autostartCh2;
 
 bool GenerateCh3;
 bool RepeatCh3;
 bool LoadCh3;
+bool autostartCh3;
 
+enum Channel currChannel;
 
 static inline void SysInit(void);
 
@@ -35,48 +40,49 @@ int main(){
 					case stopGeneration:
 						switch(currChannel){
 							 case Ch0:
-								 
+								 GenerateCh0 = FALSE;
 							 break;
 							 case Ch1:
-								 
+								 GenerateCh1 = FALSE;
 							 break;
 							 case Ch2:
-								 
+								 GenerateCh2 = FALSE;
 							 break;
 							 case Ch3:
-								
+								 GenerateCh3 = FALSE;
 							 break;
 						}
+					break;
 					case startGeneraion:
-						
 					switch(currChannel){
 							 case Ch0:
-								 
+									GenerateCh0 = TRUE;
 							 break;
 							 case Ch1:
-								 
+									GenerateCh1 = TRUE;
 							 break;
 							 case Ch2:
-								 
+								  GenerateCh2 = TRUE;
 							 break;
 							 case Ch3:
-								
+								 GenerateCh3 = TRUE;
 							 break;
 						}
+					break;
 					
 					case repeatGeneration:
 					switch(currChannel){
 							 case Ch0:
-								 
+								 RepeatCh0 = TRUE;
 							 break;
 							 case Ch1:
-								 
+								 RepeatCh1 = TRUE;
 							 break;
 							 case Ch2:
-								 
+								 RepeatCh2 = TRUE;
 							 break;
 							 case Ch3:
-								
+								 RepeatCh3 = TRUE;
 							 break;
 						}
 					break;
@@ -84,32 +90,32 @@ int main(){
 					case setAutostart:
 						switch(currChannel){
 							 case Ch0:
-								 
+								 autostartCh0 = TRUE;
 							 break;
 							 case Ch1:
-								 
+								 autostartCh1 = TRUE;
 							 break;
 							 case Ch2:
-								 
+									autostartCh2 = TRUE;
 							 break;
 							 case Ch3:
-								
+								 autostartCh3 = TRUE;
 							 break;
 						}
 						break;
 					case resetAutostart:
 						switch(currChannel){
 							 case Ch0:
-								 
+								 autostartCh0 = FALSE;
 							 break;
 							 case Ch1:
-								 
+								 autostartCh1 = FALSE;
 							 break;
 							 case Ch2:
-								 
+								 autostartCh2 = FALSE;
 							 break;
 							 case Ch3:
-								
+								 autostartCh3 = FALSE;
 							 break;
 						}
 						break;
@@ -147,16 +153,16 @@ int main(){
 					case stopLoad:
 						switch(currChannel){
 							 case Ch0:
-								 
+								 LoadCh0 = FALSE;
 							 break;
 							 case Ch1:
-								 
+								 LoadCh1 = FALSE;
 							 break;
 							 case Ch2:
-								 
+								 LoadCh2 = FALSE;
 							 break;
 							 case Ch3:
-								
+								 LoadCh3 = FALSE;
 							 break;
 						}
 						break;
