@@ -23,3 +23,12 @@ void USART0_IRQHandler(void){
 		USART_STAT(USART_PC) = 0;
 	}
 }
+
+
+void TIMER1_IRQHandler(void){
+	TIMER_INTF(TIMER1) = 0;   //Clear IRQ flags
+	if(timer_flag_get(TIMER1, TIMER_FLAG_UP)){
+		__NOP();
+	}
+}
+

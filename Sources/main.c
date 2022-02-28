@@ -37,7 +37,10 @@ int main(){
 			}
 			else{
 				switch(currCommand){
+					
+					
 					case stopGeneration:
+						Pull(&RS232_RX);
 						switch(currChannel){
 							 case Ch0:
 								 GenerateCh0 = FALSE;
@@ -52,8 +55,12 @@ int main(){
 								 GenerateCh3 = FALSE;
 							 break;
 						}
+						currCommand = undefined;
 					break;
+						
+						
 					case startGeneraion:
+						Pull(&RS232_RX);
 					switch(currChannel){
 							 case Ch0:
 									GenerateCh0 = TRUE;
@@ -68,9 +75,12 @@ int main(){
 								 GenerateCh3 = TRUE;
 							 break;
 						}
+					currCommand = undefined;
 					break;
 					
+						
 					case repeatGeneration:
+						Pull(&RS232_RX);
 					switch(currChannel){
 							 case Ch0:
 								 RepeatCh0 = TRUE;
@@ -85,9 +95,12 @@ int main(){
 								 RepeatCh3 = TRUE;
 							 break;
 						}
+					currCommand = undefined;
 					break;
 						
+						
 					case setAutostart:
+						Pull(&RS232_RX);
 						switch(currChannel){
 							 case Ch0:
 								 autostartCh0 = TRUE;
@@ -102,8 +115,12 @@ int main(){
 								 autostartCh3 = TRUE;
 							 break;
 						}
+						currCommand = undefined;
 						break;
+						
+						
 					case resetAutostart:
+						Pull(&RS232_RX);
 						switch(currChannel){
 							 case Ch0:
 								 autostartCh0 = FALSE;
@@ -118,7 +135,10 @@ int main(){
 								 autostartCh3 = FALSE;
 							 break;
 						}
+						currCommand = undefined;
 						break;
+						
+						
 					case setChNum:
 						currChannel = Pull(&RS232_RX);
 					break;
@@ -149,8 +169,12 @@ int main(){
 								 LoadCh3 = TRUE;
 							 break;
 						}
+						currCommand = undefined;
 						break;
+						
+						
 					case stopLoad:
+						Pull(&RS232_RX);
 						switch(currChannel){
 							 case Ch0:
 								 LoadCh0 = FALSE;
@@ -165,9 +189,13 @@ int main(){
 								 LoadCh3 = FALSE;
 							 break;
 						}
+						currCommand = undefined;
 						break;
+						
+						
 					case undefined:
-							__NOP();
+						Pull(&RS232_RX);
+						__NOP();
 					break;
 					
 				}
@@ -177,5 +205,5 @@ int main(){
 }
 
 static inline void SysInit(void){
-	
+	Tim1_Init();
 }

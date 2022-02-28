@@ -1,6 +1,5 @@
 #pragma once
 #include <stdint.h>
-//#include <stdbool.h>
 
 #include "gd32f10x.h"
 #include "gd32f10x_usart.h"
@@ -10,6 +9,10 @@
 //User includes
 #include "fifo.h"
 #include "communication.h"
+
+//User arrays for generation
+
+
 
 extern struct fifo RS232_RX;
 
@@ -41,6 +44,8 @@ Ch3
 };
 
 extern enum Channel currChannel;
+
+void Tim1_Init(void);
 
 
 
