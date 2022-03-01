@@ -1,6 +1,6 @@
 #include "main.h"
 
-//User variable declaration
+// User variable declaration
 FIFO RS232_RX;
 
 bool GenerateCh0;
@@ -27,183 +27,185 @@ enum Channel currChannel;
 
 static inline void SysInit(void);
 
-int main(){
+int main()
+{
 	SysInit();
+	uint8_t pRecData;
+	struct pulse curPulse;
+	enum PairReceive curPairState;
 	enum Command currCommand = undefined;
-	for(;;){
-		if(GetSize(&RS232_RX)!= 0){
-			if(currCommand == undefined){
+	for (;;)
+	{
+		if (GetSize(&RS232_RX) != 0) // Check RS232_RX buffer size
+		{
+			if (currCommand == undefined)
+			{
 				currCommand = GetCommand(Pull(&RS232_RX));
 			}
-			else{
-				switch(currCommand){
-					
-					
-					case stopGeneration:
-						Pull(&RS232_RX);
-						switch(currChannel){
-							 case Ch0:
-								 GenerateCh0 = FALSE;
-							 break;
-							 case Ch1:
-								 GenerateCh1 = FALSE;
-							 break;
-							 case Ch2:
-								 GenerateCh2 = FALSE;
-							 break;
-							 case Ch3:
-								 GenerateCh3 = FALSE;
-							 break;
-						}
+			else // We go to this case only for next received byte
+			{
+				uint8_t recData = Pull(&RS232_RX); // Get data from rx_buff
+				switch (currCommand)
+				{
+				case stopGeneration:
+					switch (recData)
+					{
+					case 0x00:
+						GenerateCh0 = FALSE;
+						break;
+					case 0x01:
+						GenerateCh1 = FALSE;
+						break;
+					case 0x02:
+						GenerateCh2 = FALSE;
+						break;
+					case 0x03:
+						GenerateCh3 = FALSE;
+						break;
+					case 0x04: // Stop generation for all of channels
+						GenerateCh0 = FALSE;
+						GenerateCh1 = FALSE;
+						GenerateCh2 = FALSE;
+						GenerateCh3 = FALSE;
+						break;
+					default:
+						print("Undefined behaviour\n\r");
 						currCommand = undefined;
-					break;
-						
-						
-					case startGeneraion:
-						Pull(&RS232_RX);
-					switch(currChannel){
-							 case Ch0:
-									GenerateCh0 = TRUE;
-							 break;
-							 case Ch1:
-									GenerateCh1 = TRUE;
-							 break;
-							 case Ch2:
-								  GenerateCh2 = TRUE;
-							 break;
-							 case Ch3:
-								 GenerateCh3 = TRUE;
-							 break;
-						}
+						break;
+					}
 					currCommand = undefined;
 					break;
-					
-						
-					case repeatGeneration:
-						Pull(&RS232_RX);
-					switch(currChannel){
-							 case Ch0:
-								 RepeatCh0 = TRUE;
-							 break;
-							 case Ch1:
-								 RepeatCh1 = TRUE;
-							 break;
-							 case Ch2:
-								 RepeatCh2 = TRUE;
-							 break;
-							 case Ch3:
-								 RepeatCh3 = TRUE;
-							 break;
-						}
+
+				case startGeneraion:
+					switch (recData)
+					{
+					case 0x00:
+						GenerateCh0 = TRUE;
+						break;
+					case 0x01:
+						GenerateCh1 = TRUE;
+						break;
+					case 0x02:
+						GenerateCh2 = TRUE;
+						break;
+					case 0x03:
+						GenerateCh3 = TRUE;
+						break;
+					case 0x04: // Start generation for all of channel
+						GenerateCh0 = TRUE;
+						GenerateCh1 = TRUE;
+						GenerateCh2 = TRUE;
+						GenerateCh3 = TRUE;
+						break;
+						currCommand = undefined;
+						break;
+					default:
+						print("Undefined behaviour\n\r");
+						currCommand = undefined;
+						break;
+					}
+
+				case repeatGeneration:
+					switch (recData)
+					{
+					case 0x00:
+						RepeatCh0 = TRUE;
+						break;
+					case 0x01:
+						RepeatCh1 = TRUE;
+						break;
+					case 0x02:
+						RepeatCh2 = TRUE;
+						break;
+					case 0x03:
+						RepeatCh3 = TRUE;
+						break;
+					case 0x04:
+						RepeatCh0 = RepeatCh1 = RepeatCh2 = RepeatCh3 = TRUE;
+						break;
+					default:
+						print("Undefined behavioral\n\r");
+						break;
+					}
 					currCommand = undefined;
 					break;
-						
-						
-					case setAutostart:
-						Pull(&RS232_RX);
-						switch(currChannel){
-							 case Ch0:
-								 autostartCh0 = TRUE;
-							 break;
-							 case Ch1:
-								 autostartCh1 = TRUE;
-							 break;
-							 case Ch2:
-									autostartCh2 = TRUE;
-							 break;
-							 case Ch3:
-								 autostartCh3 = TRUE;
-							 break;
-						}
-						currCommand = undefined;
+
+				case setAutostart:
+					switch (recData)
+					{
+					case 0x00:
+						autostartCh0 = TRUE;
 						break;
-						
-						
-					case resetAutostart:
-						Pull(&RS232_RX);
-						switch(currChannel){
-							 case Ch0:
-								 autostartCh0 = FALSE;
-							 break;
-							 case Ch1:
-								 autostartCh1 = FALSE;
-							 break;
-							 case Ch2:
-								 autostartCh2 = FALSE;
-							 break;
-							 case Ch3:
-								 autostartCh3 = FALSE;
-							 break;
-						}
-						currCommand = undefined;
+					case 0x01:
+						autostartCh1 = TRUE;
 						break;
-						
-						
-					case setChNum:
-						currChannel = Pull(&RS232_RX);
+					case 0x02:
+						autostartCh2 = TRUE;
+						break;
+					case 0x03:
+						autostartCh3 = TRUE;
+						break;
+					case 0x04:
+						autostartCh0 = autostartCh1 = autostartCh2 = autostartCh3 = TRUE;
+						break;
+					default:
+						print("Undefined behavior\n\r");
+					}
+					currCommand = undefined;
 					break;
-					case startLoad:
-						switch(currChannel){
-							 case Ch0:
-								 LoadCh0 = TRUE; 
-								 LoadCh1 = FALSE;
-								 LoadCh2 = FALSE;
-								 LoadCh3 = FALSE;
-							 break;
-							 case Ch1:
-								 LoadCh0 = FALSE; 
-								 LoadCh1 = TRUE;
-								 LoadCh2 = FALSE;
-								 LoadCh3 = FALSE;
-							 break;
-							 case Ch2:
-								 LoadCh0 = FALSE; 
-								 LoadCh1 = FALSE;
-								 LoadCh2 = TRUE;
-								 LoadCh3 = FALSE;
-							 break;
-							 case Ch3:
-								 LoadCh0 = FALSE; 
-								 LoadCh1 = FALSE;
-								 LoadCh2 = FALSE;
-								 LoadCh3 = TRUE;
-							 break;
-						}
-						currCommand = undefined;
+
+				case resetAutostart:
+					switch (recData)
+					{
+					case 0x00:
+						autostartCh0 = FALSE;
 						break;
-						
-						
-					case stopLoad:
-						Pull(&RS232_RX);
-						switch(currChannel){
-							 case Ch0:
-								 LoadCh0 = FALSE;
-							 break;
-							 case Ch1:
-								 LoadCh1 = FALSE;
-							 break;
-							 case Ch2:
-								 LoadCh2 = FALSE;
-							 break;
-							 case Ch3:
-								 LoadCh3 = FALSE;
-							 break;
-						}
-						currCommand = undefined;
+					case 0x01:
+						autostartCh1 = FALSE;
 						break;
-						
-						
-					case undefined:
-						Pull(&RS232_RX);
-						__NOP();
+					case 0x02:
+						autostartCh2 = FALSE;
+						break;
+					case 0x03:
+						autostartCh3 = FALSE;
+						break;
+					case 0x04:
+						autostartCh0 = autostartCh1 = autostartCh2 = autostartCh3 = FALSE;
+						break;
+					default:
+						print("Undefined behavior\n\r");
+					}
+					currCommand = undefined;
 					break;
-					
+
+				case startLoad:
+
+					if (GetCommand(recData) != stopLoad && pairState != wait_MSB && pairState != wait_LSB)
+					{
+						if (!ReceivePair(&curPulse, &curPairState, recData)){
+							__NOP();
+						}
+						else{
+							AddPair(curPulse);
+							curPairState = wait_state;
+						}
+					}
+					else{
+						currCommand = stopLoad
+					}
+					break;
+
+				case undefined:
+					Pull(&RS232_RX);
+					__NOP();
+					break;
 				}
 			}
 		}
 	}
 }
 
-static inline void SysInit(void){
+static inline void SysInit(void)
+{
 	Tim1_Init();
 }
