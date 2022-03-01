@@ -26,11 +26,13 @@ bool autostartCh3;
 enum Channel currChannel;
 
 static inline void SysInit(void);
+static inline void GpioInit(void);
 
 int main()
 {
 	SysInit();
-	uint8_t pRecData;
+	nvic_irq_enable(USART0_IRQn, 1, 1);	   // For UART0_PC
+	nvic_irq_enable(TIMER1_IRQn, 2, 2);	   // For led indicate activity
 	struct pulse curPulse;
 	enum PairReceive curPairState;
 	enum Command currCommand = undefined;
@@ -97,13 +99,12 @@ int main()
 						GenerateCh2 = TRUE;
 						GenerateCh3 = TRUE;
 						break;
-						currCommand = undefined;
-						break;
 					default:
 						print("Undefined behaviour\n\r");
-						currCommand = undefined;
 						break;
 					}
+					currCommand = undefined;
+					break;
 
 				case repeatGeneration:
 					switch (recData)
@@ -186,17 +187,16 @@ int main()
 							__NOP();
 						}
 						else{
-							AddPair(curPulse);
+							//AddPair(curPulse);
 							curPairState = wait_state;
 						}
 					}
 					else{
-						currCommand = stopLoad
+						currCommand = stopLoad;
 					}
 					break;
 
 				case undefined:
-					Pull(&RS232_RX);
 					__NOP();
 					break;
 				}
@@ -207,5 +207,13 @@ int main()
 
 static inline void SysInit(void)
 {
-	Tim1_Init();
+	Tim1_Init();//Used for generate 
+	UsartInit();
+	GpioInit();
+	print("Generator v 0.1 2022-03-01\n\r");
+}
+
+static inline void GpioInit(void){
+	RCU_APB2EN |= RCU_APB2EN_PCEN;
+	gpio_init(GPIOC, GPIO_MODE_OUT_OD, GPIO_OSPEED_10MHZ, GPIO_PIN_13); // It's led for indicate activity
 }

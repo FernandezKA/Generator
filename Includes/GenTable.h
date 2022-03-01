@@ -1,10 +1,10 @@
 #pragma once
 #include "main.h"
 #include "communication.h"
-#define CH0_SIZE 256U
-#define CH1_SIZE 256U
-#define CH2_SIZE 256U
-#define CH3_SIZE 256U
+#define CH0_SIZE 64U
+#define CH1_SIZE 64U
+#define CH2_SIZE 64U
+#define CH3_SIZE 64U
 
 //User type definition
 struct pulse{
@@ -31,5 +31,5 @@ extern uint16_t pCh1;
 extern uint16_t pCh2;
 extern uint16_t pCh3;
 
-void AddPair(bool cState, uint16_t cTime, enum Channel ch);
+void AddPair(bool cState, uint16_t cTime, enum Channel* ch);
 //User function definition
