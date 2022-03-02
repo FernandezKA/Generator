@@ -31,5 +31,5 @@ extern uint16_t pCh1;
 extern uint16_t pCh2;
 extern uint16_t pCh3;
 
-void AddPair(bool cState, uint16_t cTime, enum Channel* ch);
+void AddPair(bool cState, uint16_t cTime, uint8_t ch);
 //User function definition

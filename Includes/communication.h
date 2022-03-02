@@ -5,7 +5,7 @@
 #include "GenTable.h"
 
 enum Command{
-	undefined, 
+	undefined = 0, 
 	stopGeneration, 
 	startGeneraion, 
 	repeatGeneration, 

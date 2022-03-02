@@ -36,6 +36,7 @@ int main()
 	struct pulse curPulse;
 	enum PairReceive curPairState;
 	enum Command currCommand = undefined;
+	static uint8_t curLoadCh = 0xFF;
 	Clear(&RS232_RX);
 	for (;;)
 	{
@@ -199,20 +200,24 @@ int main()
 					break;
 
 				case startLoad:
-
+					if(curLoadCh == 0xFF){
+						curLoadCh = recData;
+						print("Channel is selected\n\r");
+					}
 					if (GetCommand(recData) != stopLoad && pairState != wait_MSB && pairState != wait_LSB)
 					{
 						if (!ReceivePair(&curPulse, &curPairState, recData)){
 							__NOP();
 						}
 						else{
-							AddPair(curPulse.state, curPulse.time, &currChannel);
+							AddPair(curPulse.state, curPulse.time, curLoadCh);
 							curPairState = wait_state;
 							print("Pair added\n\r");
 						}
 					}
 					else{
 						currCommand = stopLoad;
+						print("Loading is stopped\n\r");
 					}
 					break;
 

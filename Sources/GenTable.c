@@ -17,22 +17,22 @@ uint16_t pCh2 = 0;
 uint16_t pCh3 = 0;
 
 
-void AddPair(bool cState, uint16_t cTime, enum Channel* ch){
-	 if(*ch == Ch0) {
-		 Ch0_array[pCh0++].state = cState;
-		 Ch0_array[pCh0].time = cTime;
+void AddPair(bool cState, uint16_t cTime, uint8_t ch){
+	 if(ch == 0) {
+		 Ch0_array[countCh0].state = cState;
+		 Ch0_array[countCh0++].time = cTime;
 	 }
-	 else if(*ch == Ch1){
-		 Ch1_array[pCh1++].state = cState;
-		 Ch1_array[pCh1].time = cTime;		 
+	 else if(ch == 1){
+		 Ch1_array[countCh1].state = cState;
+		 Ch1_array[countCh1++].time = cTime;		 
 	 }
-	 else if(*ch == Ch2){
-		 Ch2_array[pCh2++].state = cState;
-		 Ch2_array[pCh2].time = cTime;
+	 else if(ch == 2){
+		 Ch2_array[countCh2].state = cState;
+		 Ch2_array[countCh2++].time = cTime;
 	 }
-	 else if(*ch == Ch3){
-		 Ch3_array[pCh3++].state = cState;
-		 Ch3_array[pCh3].time = cTime;
+	 else if(ch == 3){
+		 Ch3_array[countCh3].state = cState;
+		 Ch3_array[countCh3++].time = cTime;
 	 }
 	 else{
 			print("Undefined behavioral\n\r");
