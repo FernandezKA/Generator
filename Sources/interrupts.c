@@ -5,6 +5,11 @@ static uint16_t counterCh0 = 0;
 static uint16_t counterCh1 = 0;
 static uint16_t counterCh2 = 0;
 static uint16_t counterCh3 = 0;
+static uint16_t counterLed = 0;
+
+#define GPIO_LED (1U<<13)
+#define GPIO_CH0 (1U<<14)
+#define GPIO_CH1 (1U<<15)
 
 void USART0_IRQHandler(void)
 {
@@ -21,12 +26,21 @@ void USART0_IRQHandler(void)
 
 void TIMER1_IRQHandler(void)
 {
-	GPIO_OCTL(GPIOC)^=(1<<13);
+	//This part of code used for indicate activity
+	if(counterLed != 40000){
+		 ++counterLed;
+	}
+	else{
+		 counterLed = 0;
+		GPIO_OCTL(GPIOC)^=GPIO_LED;
+	}
+	//This part of code used for generate signal
 	if (timer_flag_get(TIMER1, TIMER_FLAG_UP))
 	{
 		timer_flag_clear(TIMER1, TIMER_FLAG_UP);
 		if (GenerateCh0)
 		{
+			GPIO_OCTL(GPIOC)^=GPIO_CH0;
 			if (pCh0 != countCh0)
 			{ // Check for end of list
 				if (counterCh0 != Ch0_array[pCh0].time)
@@ -37,6 +51,12 @@ void TIMER1_IRQHandler(void)
 				{
 					counterCh0 = 0;
 					pCh0++;
+					if(Ch0_array[pCh0].state){
+						 GPIO_OCTL(GPIOC) |= GPIO_CH0;
+					}
+					else{
+						 GPIO_OCTL(GPIOC) &=~GPIO_CH0;
+					}
 				}
 			}
 			else
@@ -64,6 +84,12 @@ void TIMER1_IRQHandler(void)
 				{
 					counterCh1 = 0;
 					pCh1++;
+										if(Ch1_array[pCh1].state){
+						 GPIO_OCTL(GPIOC) |= GPIO_CH1;
+					}
+					else{
+						 GPIO_OCTL(GPIOC) &=~GPIO_CH1;
+					}
 				}
 			}
 			else

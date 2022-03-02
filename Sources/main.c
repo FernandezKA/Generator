@@ -36,6 +36,7 @@ int main()
 	struct pulse curPulse;
 	enum PairReceive curPairState;
 	enum Command currCommand = undefined;
+	Clear(&RS232_RX);
 	for (;;)
 	{
 		if (GetSize(&RS232_RX) != 0) // Check RS232_RX buffer size
@@ -43,6 +44,9 @@ int main()
 			if (currCommand == undefined)
 			{
 				currCommand = GetCommand(Pull(&RS232_RX));
+				if(currCommand == undefined){
+					 print("Command not recognized\n\r");
+				}
 			}
 			else // We go to this case only for next received byte
 			{
@@ -54,21 +58,26 @@ int main()
 					{
 					case 0x00:
 						GenerateCh0 = FALSE;
+					print("Generation is stopped at channel 0\n\r");
 						break;
 					case 0x01:
 						GenerateCh1 = FALSE;
+					print("Generation is stopped at channel 1\n\r");
 						break;
 					case 0x02:
 						GenerateCh2 = FALSE;
+					print("Generation is stopped at channel 2\n\r");
 						break;
 					case 0x03:
 						GenerateCh3 = FALSE;
+					print("Generation is stopped at channel 3\n\r");
 						break;
 					case 0x04: // Stop generation for all of channels
 						GenerateCh0 = FALSE;
 						GenerateCh1 = FALSE;
 						GenerateCh2 = FALSE;
-						GenerateCh3 = FALSE;
+						GenerateCh3 = FALSE;     
+						print("Generation is stopped for all of channels\n\r");
 						break;
 					default:
 						print("Undefined behaviour\n\r");
@@ -83,21 +92,26 @@ int main()
 					{
 					case 0x00:
 						GenerateCh0 = TRUE;
+						print("Start generation at channel 0\n\r");
 						break;
 					case 0x01:
 						GenerateCh1 = TRUE;
+					print("Start generation at channel 1\n\r");
 						break;
 					case 0x02:
 						GenerateCh2 = TRUE;
+					print("Start generation at channel 2\n\r");
 						break;
 					case 0x03:
 						GenerateCh3 = TRUE;
+					print("Start generation at channel 3\n\r");
 						break;
 					case 0x04: // Start generation for all of channel
 						GenerateCh0 = TRUE;
 						GenerateCh1 = TRUE;
 						GenerateCh2 = TRUE;
 						GenerateCh3 = TRUE;
+					print("Start generation for all of channel\n\r");
 						break;
 					default:
 						print("Undefined behaviour\n\r");
@@ -111,18 +125,23 @@ int main()
 					{
 					case 0x00:
 						RepeatCh0 = TRUE;
+					print("Repeat is set for channel 0\n\r");
 						break;
 					case 0x01:
 						RepeatCh1 = TRUE;
+					print("Repeat is set for channel 1\n\r");
 						break;
 					case 0x02:
 						RepeatCh2 = TRUE;
+					print("Repeat is set for channel 2\n\r");
 						break;
 					case 0x03:
 						RepeatCh3 = TRUE;
+					print("Repeat is set for channel 3\n\r");
 						break;
 					case 0x04:
 						RepeatCh0 = RepeatCh1 = RepeatCh2 = RepeatCh3 = TRUE;
+					print("Repeat is set for all of channels\n\r");
 						break;
 					default:
 						print("Undefined behavioral\n\r");
@@ -187,8 +206,9 @@ int main()
 							__NOP();
 						}
 						else{
-							//AddPair(curPulse);
+							AddPair(curPulse.state, curPulse.time, &currChannel);
 							curPairState = wait_state;
+							print("Pair added\n\r");
 						}
 					}
 					else{
@@ -215,5 +235,7 @@ static inline void SysInit(void)
 
 static inline void GpioInit(void){
 	RCU_APB2EN |= RCU_APB2EN_PCEN;
-	gpio_init(GPIOC, GPIO_MODE_OUT_OD, GPIO_OSPEED_10MHZ, GPIO_PIN_13); // It's led for indicate activity
+	gpio_init(GPIOC, GPIO_MODE_OUT_OD, GPIO_OSPEED_50MHZ, GPIO_PIN_13); // It's led for indicate activity
+	gpio_init(GPIOC, GPIO_MODE_OUT_OD, GPIO_OSPEED_50MHZ, GPIO_PIN_14); // It's Ch0
+	gpio_init(GPIOC, GPIO_MODE_OUT_OD, GPIO_OSPEED_50MHZ, GPIO_PIN_15); // It's Ch1
 }
