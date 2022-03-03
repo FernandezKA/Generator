@@ -26,6 +26,8 @@ void USART0_IRQHandler(void)
 
 void TIMER1_IRQHandler(void)
 {
+	GPIO_OCTL(GPIOC) ^= GPIO_LED;
+	TIMER_CTL0(TIMER1)|=TIMER_CTL0_CEN;
 	// This part of code used for indicate activity
 	if (counterLed != 40000)
 	{
@@ -34,7 +36,6 @@ void TIMER1_IRQHandler(void)
 	else
 	{
 		counterLed = 0;
-		GPIO_OCTL(GPIOC) ^= GPIO_LED;
 	}
 	// This part of code used for generate signal
 	if (timer_flag_get(TIMER1, TIMER_FLAG_UP))
@@ -42,7 +43,6 @@ void TIMER1_IRQHandler(void)
 		timer_flag_clear(TIMER1, TIMER_FLAG_UP);
 		if (GenerateCh0)
 		{
-
 			if (pCh0 != countCh0)
 			{ // Check for end of list
 				if (counterCh0 != Ch0_array[pCh0].time)
