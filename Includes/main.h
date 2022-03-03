@@ -6,13 +6,11 @@
 #include "gd32f10x_gpio.h"
 #include "gd32f10x_timer.h"
 
-//User includes
+// User includes
 #include "fifo.h"
 #include "communication.h"
 
-//User arrays for generation
-
-
+// User arrays for generation
 
 extern struct fifo RS232_RX;
 
@@ -36,16 +34,14 @@ extern bool RepeatCh3;
 extern bool LoadCh3;
 extern bool autostartCh3;
 
-enum Channel {
-Ch0,
-Ch1, 
-Ch2, 
-Ch3
+enum Channel
+{
+    Ch0,
+    Ch1,
+    Ch2,
+    Ch3
 };
 
 extern enum Channel currChannel;
 
 void Tim1_Init(void);
-
-
-

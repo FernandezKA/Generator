@@ -1,7 +1,8 @@
 #include "uart.h"
 
-void UsartInit(void){
-	 //Enable clocking
+void UsartInit(void)
+{
+	// Enable clocking
 	RCU_APB2EN |= RCU_APB2EN_USART0EN;
 	RCU_APB2EN |= RCU_APB2EN_PAEN;
 	usart_deinit(USART_PC);
@@ -15,6 +16,5 @@ void UsartInit(void){
 	gpio_init(GPIOA, GPIO_MODE_AF_PP, GPIO_OSPEED_50MHZ, GPIO_PIN_9);
 	gpio_init(GPIOA, GPIO_MODE_IPD, GPIO_OSPEED_50MHZ, GPIO_PIN_10);
 	usart_enable(USART_PC);
-		//Set main parameters
-	
+	// Set main parameters
 }

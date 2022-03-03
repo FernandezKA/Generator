@@ -31,10 +31,10 @@ static inline void GpioInit(void);
 int main()
 {
 	SysInit();
-	nvic_irq_enable(USART0_IRQn, 1, 1);	   // For UART0_PC
-	nvic_irq_enable(TIMER1_IRQn, 2, 2);	   // For led indicate activity
+	nvic_irq_enable(USART0_IRQn, 1, 1); // For UART0_PC
+	nvic_irq_enable(TIMER1_IRQn, 2, 2); // For led indicate activity
 	struct pulse curPulse;
-	enum PairReceive curPairState;
+	enum PairReceive curPairState = wait_state;
 	enum Command currCommand = undefined;
 	static uint8_t curLoadCh = 0xFF;
 	Clear(&RS232_RX);
@@ -42,11 +42,12 @@ int main()
 	{
 		if (GetSize(&RS232_RX) != 0) // Check RS232_RX buffer size
 		{
-			if (currCommand == undefined)
+			if (currCommand == undefined || currCommand == stopLoad)
 			{
 				currCommand = GetCommand(Pull(&RS232_RX));
-				if(currCommand == undefined){
-					 print("Command not recognized\n\r");
+				if (currCommand == undefined)
+				{
+					print("Command not recognized\n\r");
 				}
 			}
 			else // We go to this case only for next received byte
@@ -59,25 +60,25 @@ int main()
 					{
 					case 0x00:
 						GenerateCh0 = FALSE;
-					print("Generation is stopped at channel 0\n\r");
+						print("Generation is stopped at channel 0\n\r");
 						break;
 					case 0x01:
 						GenerateCh1 = FALSE;
-					print("Generation is stopped at channel 1\n\r");
+						print("Generation is stopped at channel 1\n\r");
 						break;
 					case 0x02:
 						GenerateCh2 = FALSE;
-					print("Generation is stopped at channel 2\n\r");
+						print("Generation is stopped at channel 2\n\r");
 						break;
 					case 0x03:
 						GenerateCh3 = FALSE;
-					print("Generation is stopped at channel 3\n\r");
+						print("Generation is stopped at channel 3\n\r");
 						break;
 					case 0x04: // Stop generation for all of channels
 						GenerateCh0 = FALSE;
 						GenerateCh1 = FALSE;
 						GenerateCh2 = FALSE;
-						GenerateCh3 = FALSE;     
+						GenerateCh3 = FALSE;
 						print("Generation is stopped for all of channels\n\r");
 						break;
 					default:
@@ -93,26 +94,38 @@ int main()
 					{
 					case 0x00:
 						GenerateCh0 = TRUE;
+						if (pCh0 == countCh0){  //Start generate from tail
+							 pCh0 = 0;
+						}
 						print("Start generation at channel 0\n\r");
 						break;
 					case 0x01:
+												if (pCh1 == countCh1){  //Start generate from tail
+							 pCh1 = 0;
+						}
 						GenerateCh1 = TRUE;
-					print("Start generation at channel 1\n\r");
+						print("Start generation at channel 1\n\r");
 						break;
 					case 0x02:
+						if (pCh2 == countCh2){  //Start generate from tail
+							 pCh2 = 0;
+						}
 						GenerateCh2 = TRUE;
-					print("Start generation at channel 2\n\r");
+						print("Start generation at channel 2\n\r");
 						break;
 					case 0x03:
+						if (pCh3 == countCh3){  //Start generate from tail
+							 pCh3 = 0;
+						}
 						GenerateCh3 = TRUE;
-					print("Start generation at channel 3\n\r");
+						print("Start generation at channel 3\n\r");
 						break;
 					case 0x04: // Start generation for all of channel
 						GenerateCh0 = TRUE;
 						GenerateCh1 = TRUE;
 						GenerateCh2 = TRUE;
 						GenerateCh3 = TRUE;
-					print("Start generation for all of channel\n\r");
+						print("Start generation for all of channel\n\r");
 						break;
 					default:
 						print("Undefined behaviour\n\r");
@@ -126,23 +139,23 @@ int main()
 					{
 					case 0x00:
 						RepeatCh0 = TRUE;
-					print("Repeat is set for channel 0\n\r");
+						print("Repeat is set for channel 0\n\r");
 						break;
 					case 0x01:
 						RepeatCh1 = TRUE;
-					print("Repeat is set for channel 1\n\r");
+						print("Repeat is set for channel 1\n\r");
 						break;
 					case 0x02:
 						RepeatCh2 = TRUE;
-					print("Repeat is set for channel 2\n\r");
+						print("Repeat is set for channel 2\n\r");
 						break;
 					case 0x03:
 						RepeatCh3 = TRUE;
-					print("Repeat is set for channel 3\n\r");
+						print("Repeat is set for channel 3\n\r");
 						break;
 					case 0x04:
 						RepeatCh0 = RepeatCh1 = RepeatCh2 = RepeatCh3 = TRUE;
-					print("Repeat is set for all of channels\n\r");
+						print("Repeat is set for all of channels\n\r");
 						break;
 					default:
 						print("Undefined behavioral\n\r");
@@ -200,24 +213,50 @@ int main()
 					break;
 
 				case startLoad:
-					if(curLoadCh == 0xFF){
+					if (curLoadCh == 0xFF)
+					{          //Get select used channel
 						curLoadCh = recData;
 						print("Channel is selected\n\r");
+						break;
 					}
-					if (GetCommand(recData) != stopLoad && pairState != wait_MSB && pairState != wait_LSB)
-					{
-						if (!ReceivePair(&curPulse, &curPairState, recData)){
-							__NOP();
-						}
-						else{
-							AddPair(curPulse.state, curPulse.time, curLoadCh);
-							curPairState = wait_state;
-							print("Pair added\n\r");
-						}
-					}
-					else{
-						currCommand = stopLoad;
-						print("Loading is stopped\n\r");
+					//If channel is selected, go to this case
+						switch(curPairState){
+							case wait_state:
+								print("wait_state\n\r");
+							 switch(recData){
+								 case 0x00:  //Low state 
+									curPulse.state = FALSE;
+								 curPairState = wait_MSB;
+								 break;
+								 
+								 case 0x08:   //Stop command
+									 currCommand = undefined;
+									 print("Stop detected\n\r");
+									 curLoadCh = 0xFF;
+								 break;
+								 
+								 case 0xFF:  //High state
+									curPulse.state = TRUE;
+								 curPairState = wait_MSB;
+								 break;
+								 
+								 default:     //Mistake
+									 print("Undefined command\n\r");
+								 break;
+							 }
+							break;
+							case wait_MSB:
+								print("wait MSB\n\r");
+									curPulse.time =(uint16_t) (recData << 8);
+									curPairState = wait_LSB;
+							break;
+							case wait_LSB:
+								print("wait LSB\n\r");
+								 curPulse.time|= (uint16_t) (recData & 0xFF); 
+									AddPair(curPulse.state, curPulse.time, curLoadCh);
+									print("Pair added\n\r");
+								 curPairState = wait_state;
+							break;
 					}
 					break;
 
@@ -232,15 +271,17 @@ int main()
 
 static inline void SysInit(void)
 {
-	Tim1_Init();//Used for generate 
+	Tim1_Init(); // Used for generate
 	UsartInit();
 	GpioInit();
 	print("Generator v 0.1 2022-03-01\n\r");
 }
 
-static inline void GpioInit(void){
+static inline void GpioInit(void)
+{
 	RCU_APB2EN |= RCU_APB2EN_PCEN;
+	RCU_APB2EN |= RCU_APB2EN_PBEN;
 	gpio_init(GPIOC, GPIO_MODE_OUT_OD, GPIO_OSPEED_50MHZ, GPIO_PIN_13); // It's led for indicate activity
-	gpio_init(GPIOC, GPIO_MODE_OUT_OD, GPIO_OSPEED_50MHZ, GPIO_PIN_14); // It's Ch0
-	gpio_init(GPIOC, GPIO_MODE_OUT_OD, GPIO_OSPEED_50MHZ, GPIO_PIN_15); // It's Ch1
+	gpio_init(GPIOB, GPIO_MODE_OUT_PP, GPIO_OSPEED_50MHZ, GPIO_PIN_12); // It's Ch0
+	gpio_init(GPIOB, GPIO_MODE_OUT_PP, GPIO_OSPEED_50MHZ, GPIO_PIN_13); // It's Ch1
 }

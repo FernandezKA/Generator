@@ -1,6 +1,7 @@
 #include "main.h"
-//This function make timer1 initializing
-void Tim1_Init(void){
+// This function make timer1 initializing
+void Tim1_Init(void)
+{
 	RCU_APB1EN |= RCU_APB1EN_TIMER1EN;
 	timer_deinit(TIMER1);
 	timer_deinit(TIMER1);

@@ -21,7 +21,11 @@ void Push(FIFO *buf, TypeFifo data)
 
 TypeFifo Pull(FIFO *buf)
 {
-	return buf->Data[buf->Tail++];
+	TypeFifo data = buf->Data[buf->Tail++];
+	if(buf->Head == buf->Tail){
+		 Clear(buf);
+	}
+	return data;
 }
 
 uint16_t GetSize(FIFO *buf)
