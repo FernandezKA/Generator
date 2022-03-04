@@ -1,0 +1,47 @@
+#include "periph_layer.h"
+
+
+void CLK_Init(void){
+	RCU_APB2EN |= RCU_APB2EN_USART0EN;
+	RCU_APB2EN |= RCU_APB2EN_PAEN;
+	RCU_APB2EN |= RCU_APB2EN_PCEN;
+	RCU_APB1EN |= RCU_APB1EN_TIMER1EN;
+}
+
+void GPIO_Init(void){
+	//This gpio used for USART_PC
+	gpio_afio_deinit();
+	gpio_init(GPIOA, GPIO_MODE_AF_PP, GPIO_OSPEED_50MHZ, GPIO_PIN_9); //PA9 as TX
+	gpio_init(GPIOA, GPIO_MODE_IPD, GPIO_OSPEED_50MHZ, GPIO_PIN_10);  //PA10 as RX
+	//This gpio used for led indicated
+	gpio_init(GPIOC, GPIO_MODE_OUT_OD, GPIO_OSPEED_10MHZ, GPIO_PIN_13);
+	
+}
+
+void TIMERS_Init(void){
+	//TODO: ADD timer for led indicate
+	
+	//Timer for CH1
+	timer_deinit(TIMER1);
+	timer_parameter_struct tim1;
+	tim1.prescaler = 999; // 10uS for each step
+	tim1.alignedmode = TIMER_COUNTER_EDGE;
+	tim1.counterdirection = TIMER_COUNTER_UP;
+	tim1.period = 10;
+	timer_init(TIMER1, &tim1);
+	timer_interrupt_enable(TIMER1, TIMER_INT_UP); // Interrrupt at overflow
+	TIMER_CTL0(TIMER1)|=TIMER_CTL0_SPM;
+	timer_enable(TIMER1);
+	
+}
+
+void USART_Init(void){
+	usart_deinit(USART_PC);
+	usart_baudrate_set(USART_PC, 115200UL);
+	usart_parity_config(USART_PC, USART_PM_NONE);
+	usart_transmit_config(USART_PC, USART_TRANSMIT_ENABLE);
+	usart_receive_config(USART_PC, USART_RECEIVE_ENABLE);
+	// usart_interrupt_enable(USART0, USART_INT_TBE);
+	usart_interrupt_enable(USART_PC, USART_INT_RBNE);
+	usart_enable(USART_PC);
+}
