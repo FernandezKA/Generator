@@ -2,7 +2,6 @@
 #include "periph_layer.h"
 #include "system_layer.h"
 #include "user_layer.h"
-
 #include "protocol.h"
 
 static inline void SysInit(void);
@@ -13,17 +12,17 @@ int main(){
 	 for(;;){
 		 if(GetSize(&RS232_RX) != 0){
 			 uint8_t recData = Pull(&RS232_RX);
-			 switch(DetectCommand(recData)){
+			 switch(detCmd){
 				 case undef:
-					 
+					 detCmd = DetectCommand(recData);
 				 break;
 				 
 				 case start:
-					 
+					 status_gen(recData, TRUE);
 				 break;
 				 
 				 case stop:
-					 
+					 status_gen(recData, FALSE);
 				 break;
 				 
 				 case set_repeat:

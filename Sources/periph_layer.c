@@ -45,3 +45,42 @@ void USART_Init(void){
 	usart_interrupt_enable(USART_PC, USART_INT_RBNE);
 	usart_enable(USART_PC);
 }
+
+void StartGenCh0(void){
+	 TIMER_CTL0(TIMER1)|=TIMER_CTL0_CEN;
+}
+
+void StopGenCh0(void){
+	 TIMER_CTL0(TIMER1)&=~TIMER_CTL0_CEN;
+}
+
+void FlashErase(uint32_t* pAddr){
+	 FMC_KEY0 = 0x45670123;
+	 FMC_KEY0 = 0xCDEF89AB;
+	 while((FMC_STAT0 & FMC_STAT0_BUSY) == FMC_STAT0_BUSY){__NOP();}//Wait while flash is busy
+	 FMC_CTL0|= FMC_CTL0_PER;
+	 FMC_ADDR0 = (uint32_t) pAddr;
+	 FMC_CTL0|=FMC_CTL0_START;
+	 while((FMC_STAT0 & FMC_STAT0_BUSY) == FMC_STAT0_BUSY){__NOP();}//Wait while flash is busy
+}
+
+void FlashWrite(uint32_t* pAddr, uint16_t* data){
+	 FMC_KEY0 = 0x45670123;
+	 FMC_KEY0 = 0xCDEF89AB;
+	 while((FMC_STAT0 & FMC_STAT0_BUSY) == FMC_STAT0_BUSY){__NOP();}//Wait while flash is busy
+	 FMC_CTL0|=FMC_CTL0_PG;
+	 for(uint8_t i = 0; i < 0x40U; ++i){
+		 while((FMC_STAT0 & FMC_STAT0_BUSY) == FMC_STAT0_BUSY){__NOP();}//Wait while flash is busy
+		 *((uint32_t*) (pAddr + i * sizeof(uint16_t))) = *(data + i);
+	 }
+	 while((FMC_STAT0 & FMC_STAT0_BUSY) == FMC_STAT0_BUSY){__NOP();}//Wait while flash is busy
+	 return;
+}
+
+uint16_t FlashHalfRead(uint32_t* pAddr){
+	return (uint16_t) *(pAddr);
+}
+
+uint32_t FlashWordRead(uint32_t* pAddr){
+	return (uint32_t) *pAddr;
+}
