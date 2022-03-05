@@ -84,3 +84,17 @@ uint16_t FlashHalfRead(uint32_t* pAddr){
 uint32_t FlashWordRead(uint32_t* pAddr){
 	return (uint32_t) *pAddr;
 }
+
+void GPIO_CH0_STATE(bool state){
+	if(state){
+		GPIO_OCTL(GPIOB)|=GPIO_CH0;
+	}
+	else{
+		GPIO_OCTL(GPIOB)&=~GPIO_CH0;
+	}
+}
+
+void IRQ_Enable(void){
+	nvic_irq_enable(USART0_IRQn, 2, 1); // For UART0_PC
+	nvic_irq_enable(TIMER1_IRQn, 2, 2);
+}

@@ -5,6 +5,11 @@
 //Definitions block
 #define USART_PC USART0
 
+#define GPIO_LED (1U << 13)
+#define GPIO_CH0 (1U << 12)
+#define GPIO_CH1 (1U << 13)
+
+
 void CLK_Init(void);
 
 void GPIO_Init(void);
@@ -24,3 +29,7 @@ void FlashWrite(uint32_t* pAddr, uint16_t* data);
 uint16_t FlashHalfRead(uint32_t* pAddr);
 
 uint32_t FlashWordRead(uint32_t* pAddr);
+
+void GPIO_CH0_STATE(bool state);
+
+void IRQ_Enable(void);

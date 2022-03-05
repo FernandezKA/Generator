@@ -31,10 +31,6 @@ enum command DetectCommand(uint8_t data){
 			 recCmd = start_load;
 		break;
 		
-		case 0x08:
-			 recCmd = stop_load;
-		break;
-		
 		default:
 			 recCmd = undef;
 		break;

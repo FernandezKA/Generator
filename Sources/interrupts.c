@@ -1,15 +1,11 @@
 #include "interrupts.h"
 #include "system_layer.h"
 
-#define GPIO_LED (1U << 13)
-#define GPIO_CH0 (1U << 12)
-#define GPIO_CH1 (1U << 13)
-
 void USART0_IRQHandler(void)
 {
-	if (usart_flag_get(USART_PC, USART_FLAG_RBNE))
+	volatile uint32_t usart_stat = USART_STAT(USART_PC);
+	if ((usart_stat & USART_STAT_TC) == USART_STAT_TC)
 	{
-		usart_flag_clear(USART_PC, USART_FLAG_RBNE);
 		USART_RX_Handler(usart_data_receive(USART_PC));
 	}
 	else
@@ -26,5 +22,6 @@ void TIMER1_IRQHandler(void)
 	if (timer_flag_get(TIMER1, TIMER_FLAG_UP))
 	{
 		timer_flag_clear(TIMER1, TIMER_FLAG_UP);
+		TIM1_Handler();
 	}
 }

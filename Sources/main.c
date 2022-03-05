@@ -8,6 +8,7 @@ static inline void SysInit(void);
 
 int main(){
 	SysInit();
+	print("Generator v 0.1 2022-03-04\n\r");
 	enum command detCmd = undef;
 	 for(;;){
 		 if(GetSize(&RS232_RX) != 0){
@@ -26,30 +27,34 @@ int main(){
 				 break;
 				 
 				 case set_repeat:
-					 
+					 status_repeat(recData, TRUE); 
 				 break;
 				 
 				 case reset_repeat:
-					 
+					 status_repeat(recData, FALSE);
 				 break;
 				 
 				 case set_autostart:
-					 
+					 __NOP();
 				 break;
 				 
 				 case reset_autostart:
-					 
+					 __NOP();
 				 break;
 				 
 				 case start_load:
-					 
-				 break;
-				 
-				 case stop_load:
-					 
+					 if(parity==0xFF){//First byte of packet
+							parity = recData;
+					 }
+					 else{
+					 if(ReceiveSample(recData)){  //Detect stop only for full time added
+						if(recTime == STOP_TIME){
+								print("Load ended\n\r");
+						}
+					 }
+				 }
 				 break;
 			 }
-			 
 		 }
 	 }
 }
@@ -60,4 +65,5 @@ static inline void SysInit(void){
 	 GPIO_Init();
 	 TIMERS_Init();
 	 USART_Init();
+	 IRQ_Enable();
 }
