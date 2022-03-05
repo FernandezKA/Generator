@@ -2,26 +2,25 @@
 #include "system_layer.h"
 #include "user_layer.h"
 
-uint16_t recTime = 0x0000;
-bool msb_received = FALSE;
+uint32_t recTime = 0x0000;
+uint8_t part_received = 0x00;
 
-uint16_t GetSample(uint16_t currIndex){
-	uint16_t time = 0x0000;
-	time = FlashHalfRead((uint32_t*) ((uint32_t) currIndex + (uint32_t) pBeginCh0));
-	return time;
+uint32_t GetSample(uint32_t currIndex, uint32_t* pTable){
+	return FlashRead((uint32_t*) (currIndex + (uint32_t) pTable));
 }
 
  bool ReceiveSample(uint8_t time_part){
-	if(msb_received){
+	if(part_received == 0x03U){
 		 recTime |= time_part;
 		 AddSample(recTime);
-		 msb_received = FALSE;
+		 recTime = 0;
+		 part_received = 0x00;
 		 return TRUE;
 	}
 	else{
-		 recTime = (uint16_t) (time_part << 8);
-		 msb_received = TRUE;
-		 return FALSE;
+		recTime |= (uint32_t) (time_part << ((part_received + 1) * 8));
+		++part_received;
+		return FALSE;
 	}
  }
 

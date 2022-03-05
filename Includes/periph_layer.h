@@ -24,11 +24,9 @@ void StopGenCh0(void);
 
 void FlashErase(uint32_t* pAddr);
 
-void FlashWrite(uint32_t* pAddr, uint16_t* data);
+void FlashWrite(uint32_t* pAddr, uint32_t* data);
 
-uint16_t FlashHalfRead(uint32_t* pAddr);
-
-uint32_t FlashWordRead(uint32_t* pAddr);
+uint32_t FlashRead(uint32_t* pAddr);
 
 void GPIO_CH0_STATE(bool state);
 

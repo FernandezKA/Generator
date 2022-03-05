@@ -63,24 +63,22 @@ void FlashErase(uint32_t* pAddr){
 	 while((FMC_STAT0 & FMC_STAT0_BUSY) == FMC_STAT0_BUSY){__NOP();}//Wait while flash is busy
 }
 
-void FlashWrite(uint32_t* pAddr, uint16_t* data){
+void FlashWrite(uint32_t* pAddr, uint32_t* data){
 	 FMC_KEY0 = 0x45670123;
 	 FMC_KEY0 = 0xCDEF89AB;
 	 while((FMC_STAT0 & FMC_STAT0_BUSY) == FMC_STAT0_BUSY){__NOP();}//Wait while flash is busy
 	 FMC_CTL0|=FMC_CTL0_PG;
-	 for(uint8_t i = 0; i < 0x40U; ++i){
+	 for(uint8_t i = 0; i < 32; ++i){
 		 while((FMC_STAT0 & FMC_STAT0_BUSY) == FMC_STAT0_BUSY){__NOP();}//Wait while flash is busy
-		 *((uint32_t*) (pAddr + i * sizeof(uint16_t))) = *(data + i);
+		 *((uint32_t*)(pAddr + i)) = data[i];
 	 }
 	 while((FMC_STAT0 & FMC_STAT0_BUSY) == FMC_STAT0_BUSY){__NOP();}//Wait while flash is busy
+	 FMC_CTL0&=~FMC_CTL0_PG;
+	 FMC_CTL0&=~FMC_CTL0_LK;
 	 return;
 }
 
-uint16_t FlashHalfRead(uint32_t* pAddr){
-	return (uint16_t) *(pAddr);
-}
-
-uint32_t FlashWordRead(uint32_t* pAddr){
+uint32_t FlashRead(uint32_t* pAddr){
 	return (uint32_t) *pAddr;
 }
 

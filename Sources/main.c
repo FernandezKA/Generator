@@ -58,6 +58,8 @@ int main(){
 					 else{
 					 if(ReceiveSample(recData)){  //Detect stop only for full time added
 						if(recTime == STOP_TIME){
+								FlashErase(pBeginCh0 + (countSampleCh0/0x0400));
+								FlashWrite(pBeginCh0 + (countSampleCh0/0x0400), &samplesCh0[0]);
 								print("Load ended\n\r");
 								detCmd = undef;
 						}

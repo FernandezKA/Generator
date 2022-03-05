@@ -4,9 +4,9 @@
 extern uint32_t* pBeginCh0;
 extern uint32_t* pEndCh0;
 
-extern uint16_t currSampleCh0;
-extern uint16_t countSampleCh0;
-extern uint16_t samplesCh0[64U];
+extern uint32_t currSampleCh0;
+extern uint32_t countSampleCh0;
+extern uint32_t samplesCh0[32U];
 
 extern bool repeatCh0;
 
@@ -21,6 +21,6 @@ void TIM1_Handler(void);
 
 bool status_gen(uint8_t channel, bool state);
 
-void AddSample(uint16_t sample);
+void AddSample(uint32_t sample);
 
 bool status_repeat(uint8_t channel, bool state);
