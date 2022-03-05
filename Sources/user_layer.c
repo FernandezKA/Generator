@@ -6,7 +6,7 @@ uint32_t recTime = 0x0000;
 uint8_t part_received = 0x00;
 
 uint32_t GetSample(uint32_t currIndex, uint32_t* pTable){
-	return FlashRead((uint32_t*) (currIndex + (uint32_t) pTable * sizeof(uint32_t)));
+	return FlashRead((uint32_t*) (currIndex * sizeof(uint32_t) + (uint32_t) pTable));
 }
 
 bool ReceiveSample(uint8_t time_part){
