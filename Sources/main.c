@@ -53,15 +53,19 @@ int main(){
 				 case start_load:
 					 if(parity==0xFF){//First byte of packet
 							parity = recData;
+						  FlashErase((uint32_t) pBeginCh0 - countSampleCh0%0x20);
 						  print("Pulse state is selected\n\r");
 					 }
 					 else{
 					 if(ReceiveSample(recData)){  //Detect stop only for full time added
-						if(recTime == STOP_TIME){
-								FlashErase(pBeginCh0 + (countSampleCh0/0x0400));
-								FlashWrite(pBeginCh0 + (countSampleCh0/0x0400), &samplesCh0[0]);
+						if(recTime == (uint32_t) 0UL){
+								//FlashErase((uint32_t) pBeginCh0 - countSampleCh0%0x20 + 0x80);
+								FlashWrite((uint32_t) pBeginCh0  - countSampleCh0%0x20 + (countSampleCh0/0x20 * sizeof(uint32_t)), &samplesCh0[0]);
 								print("Load ended\n\r");
 								detCmd = undef;
+						}
+						else{
+							
 						}
 					 }
 				 }

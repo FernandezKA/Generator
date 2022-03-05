@@ -22,9 +22,9 @@ void StartGenCh0(void);
 
 void StopGenCh0(void);
 
-void FlashErase(uint32_t* pAddr);
+void FlashErase(uint32_t pAddr);
 
-void FlashWrite(uint32_t* pAddr, uint32_t* data);
+void FlashWrite(uint32_t pAddr, uint32_t* data);
 
 uint32_t FlashRead(uint32_t* pAddr);
 

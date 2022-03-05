@@ -53,7 +53,7 @@ void StopGenCh0(void){
 	 TIMER_CTL0(TIMER1)&=~TIMER_CTL0_CEN;
 }
 
-void FlashErase(uint32_t* pAddr){
+void FlashErase(uint32_t pAddr){
 	 FMC_KEY0 = 0x45670123;
 	 FMC_KEY0 = 0xCDEF89AB;
 	 while((FMC_STAT0 & FMC_STAT0_BUSY) == FMC_STAT0_BUSY){__NOP();}//Wait while flash is busy
@@ -63,14 +63,14 @@ void FlashErase(uint32_t* pAddr){
 	 while((FMC_STAT0 & FMC_STAT0_BUSY) == FMC_STAT0_BUSY){__NOP();}//Wait while flash is busy
 }
 
-void FlashWrite(uint32_t* pAddr, uint32_t* data){
+void FlashWrite(uint32_t pAddr, uint32_t* data){
 	 FMC_KEY0 = 0x45670123;
 	 FMC_KEY0 = 0xCDEF89AB;
 	 while((FMC_STAT0 & FMC_STAT0_BUSY) == FMC_STAT0_BUSY){__NOP();}//Wait while flash is busy
 	 FMC_CTL0|=FMC_CTL0_PG;
 	 for(uint8_t i = 0; i < 32; ++i){
 		 while((FMC_STAT0 & FMC_STAT0_BUSY) == FMC_STAT0_BUSY){__NOP();}//Wait while flash is busy
-		 *((uint32_t*)(pAddr + i)) = data[i];
+		 *((uint32_t*)(pAddr + i * sizeof(uint32_t))) = data[i];
 	 }
 	 while((FMC_STAT0 & FMC_STAT0_BUSY) == FMC_STAT0_BUSY){__NOP();}//Wait while flash is busy
 	 FMC_CTL0&=~FMC_CTL0_PG;

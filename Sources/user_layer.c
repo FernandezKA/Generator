@@ -6,19 +6,21 @@ uint32_t recTime = 0x0000;
 uint8_t part_received = 0x00;
 
 uint32_t GetSample(uint32_t currIndex, uint32_t* pTable){
-	return FlashRead((uint32_t*) (currIndex + (uint32_t) pTable));
+	return FlashRead((uint32_t*) (currIndex + (uint32_t) pTable * sizeof(uint32_t)));
 }
 
- bool ReceiveSample(uint8_t time_part){
+bool ReceiveSample(uint8_t time_part){
 	if(part_received == 0x03U){
 		 recTime |= time_part;
 		 AddSample(recTime);
-		 recTime = 0;
 		 part_received = 0x00;
 		 return TRUE;
 	}
 	else{
-		recTime |= (uint32_t) (time_part << ((part_received + 1) * 8));
+		if(part_received == 0){
+			 recTime = 0;
+		}
+		recTime |= (uint32_t) (time_part <<  (32 - ((part_received + 1) * 8)));
 		++part_received;
 		return FALSE;
 	}
