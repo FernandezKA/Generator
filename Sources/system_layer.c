@@ -10,8 +10,6 @@ uint16_t samplesCh0[64U];
 uint16_t currSampleCh0 = 0;
 uint16_t countSampleCh0 = 0;
 
-bool repeatCh0 = TRUE;
-
 struct fifo RS232_RX;
 
 //IRQ handlers
@@ -22,17 +20,22 @@ void USART_RX_Handler(uint32_t data){
 void TIM1_Handler(void){
 	 if(currSampleCh0 < countSampleCh0){
 			TIMER_CAR(TIMER1) = GetSample(currSampleCh0++);
-			GPIO_CH0_STATE((currSampleCh0%parity) == 0x00);
+			GPIO_OCTL(GPIOC)^=0x00002000;
+			//GPIO_CH0_STATE((currSampleCh0%parity) == 0x00);
+		  TIMER_CTL0(TIMER1)|=TIMER_CTL0_CEN;
 	 }
-	 else{
+	 else if(countSampleCh0 != 0){
 		 if(repeat_ch0){
 				currSampleCh0 = 0;
+			  TIMER_CAR(TIMER1) = GetSample(currSampleCh0++);
+			  TIMER_CTL0(TIMER1)|=TIMER_CTL0_CEN;
 		 }
 		 else{
+			 currSampleCh0 = 0;
 			 StopGenCh0(); 
 		 }
-	 }
 }
+	 }
 
 bool status_gen(uint8_t channel, bool state){
 	bool status = FALSE;
@@ -64,10 +67,10 @@ bool status_gen(uint8_t channel, bool state){
  }
  
  bool status_repeat(uint8_t channel, bool state){
-	 bool status = FALSE;
+	bool status = FALSE;
 	switch(channel){
 		case 0x00:
-			repeatCh0 = state;
+			repeat_ch0 = state;
 			status = TRUE;
 		break;
 		default:

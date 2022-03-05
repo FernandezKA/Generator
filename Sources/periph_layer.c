@@ -31,7 +31,6 @@ void TIMERS_Init(void){
 	timer_init(TIMER1, &tim1);
 	timer_interrupt_enable(TIMER1, TIMER_INT_UP); // Interrrupt at overflow
 	TIMER_CTL0(TIMER1)|=TIMER_CTL0_SPM;
-	timer_enable(TIMER1);
 	
 }
 
