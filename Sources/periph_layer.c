@@ -6,6 +6,7 @@ void CLK_Init(void){
 	RCU_APB2EN |= RCU_APB2EN_PAEN;
 	RCU_APB2EN |= RCU_APB2EN_PCEN;
 	RCU_APB1EN |= RCU_APB1EN_TIMER1EN;
+	RCU_APB2EN |= RCU_APB2EN_TIMER0EN;
 }
 
 void GPIO_Init(void){
@@ -22,16 +23,15 @@ void TIMERS_Init(void){
 	//TODO: ADD timer for led indicate
 	
 	//Timer for CH1
-	timer_deinit(TIMER1);
-	timer_parameter_struct tim1;
-	tim1.prescaler = 999; // 10uS for each step
-	tim1.alignedmode = TIMER_COUNTER_EDGE;
-	tim1.counterdirection = TIMER_COUNTER_UP;
-	tim1.period = 10;
-	timer_init(TIMER1, &tim1);
-	timer_interrupt_enable(TIMER1, TIMER_INT_UP); // Interrrupt at overflow
-	TIMER_CTL0(TIMER1)|=TIMER_CTL0_SPM;
-	
+	timer_deinit(SMP_TIMER);
+	timer_parameter_struct tim0;
+	tim0.prescaler = 999; // 10uS for each step
+	tim0.alignedmode = TIMER_COUNTER_EDGE;
+	tim0.counterdirection = TIMER_COUNTER_UP;
+	tim0.period = 10;
+	timer_init(SMP_TIMER, &tim0);
+	timer_interrupt_enable(SMP_TIMER, TIMER_INT_UP); // Interrrupt at overflow
+	TIMER_CTL0(SMP_TIMER)|=TIMER_CTL0_SPM;
 }
 
 void USART_Init(void){
@@ -46,11 +46,11 @@ void USART_Init(void){
 }
 
 void StartGenCh0(void){
-	 TIMER_CTL0(TIMER1)|=TIMER_CTL0_CEN;
+	 TIMER_CTL0(SMP_TIMER)|=TIMER_CTL0_CEN;
 }
 
 void StopGenCh0(void){
-	 TIMER_CTL0(TIMER1)&=~TIMER_CTL0_CEN;
+	 TIMER_CTL0(SMP_TIMER)&=~TIMER_CTL0_CEN;
 }
 
 void FlashErase(uint32_t pAddr){
@@ -94,4 +94,5 @@ void GPIO_CH0_STATE(bool state){
 void IRQ_Enable(void){
 	nvic_irq_enable(USART0_IRQn, 2, 1); // For UART0_PC
 	nvic_irq_enable(TIMER1_IRQn, 2, 2);
+	nvic_irq_enable(TIMER0_UP_IRQn, 2, 2);
 }

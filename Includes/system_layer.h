@@ -17,7 +17,7 @@ extern uint8_t parity;
 
 void USART_RX_Handler(uint32_t data);
 
-void TIM1_Handler(void);
+void TIM0_Handler(void);
 
 bool status_gen(uint8_t channel, bool state);
 

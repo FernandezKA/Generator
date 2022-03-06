@@ -10,4 +10,5 @@
 #include "fifo.h"
 
 #define USART_PC USART0
-
+#define LED_TIMER TIMER1
+#define SMP_TIMER TIMER0

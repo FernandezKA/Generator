@@ -16,12 +16,11 @@ void USART0_IRQHandler(void)
 
 
 
-void TIMER1_IRQHandler(void)
+void TIMER1_IRQHandler(void){
+ 
+};
+void	TIMER0_UP_IRQHandler(void)
 {
-	// This part of code used for generate signal
-	if (timer_flag_get(TIMER1, TIMER_FLAG_UP))
-	{
-		timer_flag_clear(TIMER1, TIMER_FLAG_UP);
-		TIM1_Handler();
-	}
+	timer_interrupt_flag_clear(TIMER0, TIMER_INT_FLAG_UP);
+	TIM0_Handler();
 }

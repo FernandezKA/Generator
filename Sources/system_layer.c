@@ -17,19 +17,20 @@ void USART_RX_Handler(uint32_t data){
 	Push(&RS232_RX, (uint8_t) data);
 }
 
-void TIM1_Handler(void){
+void TIM0_Handler(void){
+	GPIO_OCTL(GPIOC)^=(1u<<13);
 	 if(currSampleCh0 < countSampleCh0 - 1 && countSampleCh0 != 0){
-			TIMER_CREP(TIMER1) = (uint16_t) ((GetSample(currSampleCh0++, pBeginCh0) & 0xFFFF0000)>>16); 
-			TIMER_CAR(TIMER1) = (uint16_t) (GetSample(currSampleCh0, pBeginCh0) & 0xFFFF);
+			TIMER_CREP(SMP_TIMER) = (uint16_t) ((GetSample(currSampleCh0++, pBeginCh0) & 0xFFFF0000)>>16); 
+			TIMER_CAR(SMP_TIMER) = (uint16_t) (GetSample(currSampleCh0, pBeginCh0) & 0xFFFF);
 			//GPIO_CH0_STATE((currSampleCh0%parity) == 0x00);
-		  TIMER_CTL0(TIMER1)|=TIMER_CTL0_CEN;
+		  TIMER_CTL0(SMP_TIMER)|=TIMER_CTL0_CEN;
 	 }
 	 else if(countSampleCh0 - 1 == currSampleCh0 && countSampleCh0 != 0){
 		 if(repeat_ch0){
-				TIMER_CREP(TIMER1) = (uint16_t) ((GetSample(currSampleCh0++, pBeginCh0) & 0xFFFF0000)>>16); 
-				TIMER_CAR(TIMER1) = (uint16_t) (GetSample(currSampleCh0, pBeginCh0) & 0xFFFF);
+				TIMER_CREP(SMP_TIMER) = (uint16_t) ((GetSample(currSampleCh0++, pBeginCh0) & 0xFFFF0000)>>16); 
+				TIMER_CAR(SMP_TIMER) = (uint16_t) (GetSample(currSampleCh0, pBeginCh0) & 0xFFFF);
 				currSampleCh0 = 0;
-				TIMER_CTL0(TIMER1)|=TIMER_CTL0_CEN;
+				TIMER_CTL0(SMP_TIMER)|=TIMER_CTL0_CEN;
 		 }
 		 else{
 			 currSampleCh0 = 0;
@@ -43,10 +44,10 @@ bool status_gen(uint8_t channel, bool state){
 	 switch(channel){
 		 case 0:
 			 if(state){
-					TIMER_CTL0(TIMER1)|= TIMER_CTL0_CEN;
+					TIMER_CTL0(SMP_TIMER)|= TIMER_CTL0_CEN;
 			 }
 			 else{
-				 TIMER_CTL0(TIMER0)&=~TIMER_CTL0_CEN;
+				 TIMER_CTL0(SMP_TIMER)&=~TIMER_CTL0_CEN;
 			 }
 			 status = TRUE;
 		 break;
