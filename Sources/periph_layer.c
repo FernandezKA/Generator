@@ -32,6 +32,17 @@ void TIMERS_Init(void){
 	timer_init(SMP_TIMER, &tim0);
 	timer_interrupt_enable(SMP_TIMER, TIMER_INT_UP); // Interrrupt at overflow
 	TIMER_CTL0(SMP_TIMER)|=TIMER_CTL0_SPM;
+	
+	
+	timer_deinit(LED_TIMER);
+	timer_parameter_struct tim1;
+	tim1.prescaler = 0xFFFF; // 10uS for each step
+	tim1.alignedmode = TIMER_COUNTER_EDGE;
+	tim1.counterdirection = TIMER_COUNTER_UP;
+	tim1.period = 500;
+	timer_init(LED_TIMER, &tim1);
+	timer_interrupt_enable(LED_TIMER, TIMER_INT_UP); // Interrrupt at overflow
+	timer_enable(LED_TIMER);
 }
 
 void USART_Init(void){
@@ -93,6 +104,6 @@ void GPIO_CH0_STATE(bool state){
 
 void IRQ_Enable(void){
 	nvic_irq_enable(USART0_IRQn, 2, 1); // For UART0_PC
-	nvic_irq_enable(TIMER1_IRQn, 2, 2);
+	nvic_irq_enable(TIMER1_IRQn, 3, 3);
 	nvic_irq_enable(TIMER0_UP_IRQn, 2, 2);
 }
