@@ -18,17 +18,17 @@ void USART_RX_Handler(uint32_t data){
 }
 
 void TIM1_Handler(void){
-	 if(currSampleCh0 < countSampleCh0){
+	 if(currSampleCh0 < countSampleCh0 - 1 && countSampleCh0 != 0){
 			TIMER_CREP(TIMER1) = (uint16_t) ((GetSample(currSampleCh0++, pBeginCh0) & 0xFFFF0000)>>16); 
-			TIMER_CAR(TIMER1) = (uint16_t) (GetSample(currSampleCh0++, pBeginCh0) & 0xFFFF);
+			TIMER_CAR(TIMER1) = (uint16_t) (GetSample(currSampleCh0, pBeginCh0) & 0xFFFF);
 			//GPIO_CH0_STATE((currSampleCh0%parity) == 0x00);
 		  TIMER_CTL0(TIMER1)|=TIMER_CTL0_CEN;
 	 }
-	 else if(countSampleCh0 != 0){
+	 else if(countSampleCh0 - 1 == currSampleCh0 && countSampleCh0 != 0){
 		 if(repeat_ch0){
-				currSampleCh0 = 0;
 				TIMER_CREP(TIMER1) = (uint16_t) ((GetSample(currSampleCh0++, pBeginCh0) & 0xFFFF0000)>>16); 
-				TIMER_CAR(TIMER1) = (uint16_t) (GetSample(currSampleCh0++, pBeginCh0) & 0xFFFF);
+				TIMER_CAR(TIMER1) = (uint16_t) (GetSample(currSampleCh0, pBeginCh0) & 0xFFFF);
+				currSampleCh0 = 0;
 				TIMER_CTL0(TIMER1)|=TIMER_CTL0_CEN;
 		 }
 		 else{

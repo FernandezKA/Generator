@@ -32,13 +32,13 @@ int main(){
 				 
 				 case set_repeat:
 					 status_repeat(recData, TRUE);
-					 print("Reapeat set\n\r");
+					 print("Reapeat flag set\n\r");
 					 detCmd = undef;
 				 break;
 				 
 				 case reset_repeat:
 					 status_repeat(recData, FALSE);
-					 print("Repeat resaet\n\r");
+					 print("Repeat flag reset\n\r");
 					 detCmd = undef;
 				 break;
 				 
@@ -54,13 +54,14 @@ int main(){
 					 if(parity==0xFF){//First byte of packet
 							parity = recData;
 						  FlashErase((uint32_t) pBeginCh0 - countSampleCh0%0x20);
+						  countSampleCh0 = 0;
 						  print("Pulse state is selected\n\r");
 					 }
 					 else{
 					 if(ReceiveSample(recData)){  //Detect stop only for full time added
 						if(recTime == (uint32_t) 0UL){
 								FlashWrite((uint32_t) pBeginCh0 + (countSampleCh0/0x20)*sizeof(uint32_t), &samplesCh0[0]);
-								print("Load ended\n\r");
+								print("Load is ended\n\r");
 								detCmd = undef;
 						}
 						else{
