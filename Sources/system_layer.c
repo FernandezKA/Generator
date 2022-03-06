@@ -18,17 +18,18 @@ void USART_RX_Handler(uint32_t data){
 }
 
 void TIM0_Handler(void){
-	GPIO_OCTL(GPIOC)^=(1u<<13);
 	 if(currSampleCh0 < countSampleCh0 - 1 && countSampleCh0 != 0){
 			TIMER_CREP(SMP_TIMER) = (uint16_t) ((GetSample(currSampleCh0++, pBeginCh0) & 0xFFFF0000)>>16); 
 			TIMER_CAR(SMP_TIMER) = (uint16_t) (GetSample(currSampleCh0, pBeginCh0) & 0xFFFF);
-			//GPIO_CH0_STATE((currSampleCh0%parity) == 0x00);
+			GPIO_OCTL(GPIOB)^=(1<<12);
+		 //GPIO_CH0_STATE((currSampleCh0%parity) == 0x00);
 		  TIMER_CTL0(SMP_TIMER)|=TIMER_CTL0_CEN;
 	 }
 	 else if(countSampleCh0 - 1 == currSampleCh0 && countSampleCh0 != 0){
 		 if(repeat_ch0){
 				TIMER_CREP(SMP_TIMER) = (uint16_t) ((GetSample(currSampleCh0++, pBeginCh0) & 0xFFFF0000)>>16); 
 				TIMER_CAR(SMP_TIMER) = (uint16_t) (GetSample(currSampleCh0, pBeginCh0) & 0xFFFF);
+				GPIO_OCTL(GPIOB)^=(1<<12);
 				currSampleCh0 = 0;
 				TIMER_CTL0(SMP_TIMER)|=TIMER_CTL0_CEN;
 		 }

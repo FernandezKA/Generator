@@ -4,6 +4,7 @@
 void CLK_Init(void){
 	RCU_APB2EN |= RCU_APB2EN_USART0EN;
 	RCU_APB2EN |= RCU_APB2EN_PAEN;
+	RCU_APB2EN |= RCU_APB2EN_PBEN;
 	RCU_APB2EN |= RCU_APB2EN_PCEN;
 	RCU_APB1EN |= RCU_APB1EN_TIMER1EN;
 	RCU_APB2EN |= RCU_APB2EN_TIMER0EN;
@@ -16,6 +17,8 @@ void GPIO_Init(void){
 	gpio_init(GPIOA, GPIO_MODE_IPD, GPIO_OSPEED_50MHZ, GPIO_PIN_10);  //PA10 as RX
 	//This gpio used for led indicated
 	gpio_init(GPIOC, GPIO_MODE_OUT_OD, GPIO_OSPEED_10MHZ, GPIO_PIN_13);
+	//Used for generation
+	gpio_init(GPIOB, GPIO_MODE_OUT_PP, GPIO_OSPEED_50MHZ, GPIO_PIN_12);
 	
 }
 
@@ -25,10 +28,10 @@ void TIMERS_Init(void){
 	//Timer for CH1
 	timer_deinit(SMP_TIMER);
 	timer_parameter_struct tim0;
-	tim0.prescaler = 999; // 10uS for each step
+	tim0.prescaler = 1072; // 10uS for each step
 	tim0.alignedmode = TIMER_COUNTER_EDGE;
 	tim0.counterdirection = TIMER_COUNTER_UP;
-	tim0.period = 10;
+	tim0.period = 9;
 	timer_init(SMP_TIMER, &tim0);
 	timer_interrupt_enable(SMP_TIMER, TIMER_INT_UP); // Interrrupt at overflow
 	TIMER_CTL0(SMP_TIMER)|=TIMER_CTL0_SPM;
