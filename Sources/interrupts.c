@@ -16,8 +16,8 @@ void USART0_IRQHandler(void)
 
 //Used for indicate activty
 void TIMER1_IRQHandler(void){
- timer_interrupt_flag_clear(LED_TIMER, TIMER_INT_FLAG_UP);
- GPIO_OCTL(GPIOC)^=(1<<13);
+	timer_interrupt_flag_clear(LED_TIMER, TIMER_INT_FLAG_UP);
+	GPIO_OCTL(GPIOC)^=(1<<13);
 }
 //Used for definition freq. of sampling
 void	TIMER0_UP_IRQHandler(void)

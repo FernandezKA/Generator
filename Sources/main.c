@@ -16,6 +16,12 @@ int main(){
 			 switch(detCmd){
 				 case undef:
 					 detCmd = DetectCommand(recData);
+					 if(detCmd == start_load){
+						 countSampleCh0 = 0;//Reset all data for new samples
+						 currSampleCh0 = 0;
+						 FlashErase((uint32_t) pBeginCh0 - countSampleCh0%0x20);
+						 status_gen(recData, FALSE);
+					 }
 				 break;
 				 
 				 case start:
