@@ -74,6 +74,12 @@ int main(){
 				 case start_load:
 					 if(parity==0xFF){//First byte of packet
 							parity = recData;
+							if(parity == 0x00){
+								 GPIO_OCTL(GPIOB)|=(1U<<12);
+							}
+							else{
+								 GPIO_OCTL(GPIOB)&=~(1U<<12);
+							}
 						  FlashErase((uint32_t) pBeginCh0 - countSampleCh0%0x20);
 						  countSampleCh0 = 0;
 						  print("Pulse state is selected\n\r");
