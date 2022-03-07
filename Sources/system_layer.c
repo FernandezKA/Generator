@@ -1,9 +1,11 @@
 #include "system_layer.h"
 #include "user_layer.h"
 
+uint32_t* pInfo = (uint32_t*) 0x08007C00;
 uint32_t* pBeginCh0 = (uint32_t*) 0x08008000;  //Page 32
 uint32_t* pEndCh0 = 	(uint32_t*) 0x08010000;  //Page 64
 bool repeat_ch0 = FALSE;
+bool autostartCh0 = FALSE;
 uint8_t parity = 0xFF;
 uint32_t samplesCh0[32U];
 
@@ -60,7 +62,7 @@ bool status_gen(uint8_t channel, bool state){
 	 return status;
 }
 
- 
+ //BUG HERE
  void AddSample(uint32_t sample){
 	 if(countSampleCh0%0x20 == 0 && countSampleCh0 != 0){ //Get backup,if we receive one page of data
 		 //FlashErase((uint32_t) pBeginCh0 + countSampleCh0*sizeof(uint32_t));
@@ -71,7 +73,7 @@ bool status_gen(uint8_t channel, bool state){
 		samplesCh0[(countSampleCh0++)%0x20] = sample;
 	 }
  }
- 
+ //
  bool status_repeat(uint8_t channel, bool state){
 	bool status = FALSE;
 	switch(channel){
@@ -86,3 +88,37 @@ bool status_gen(uint8_t channel, bool state){
 	return status;
  }
  
+ static inline uint32_t bool_to_uint32_t(bool state){
+		if(state){
+			 return 0;
+		}
+		else{
+			 return 0xFFFFFFFF;
+		}
+ }
+ 
+ static inline bool uint32_t_to_bool(uint32_t value){
+		if(value == 0){
+			 return TRUE;
+		}
+		else{
+			 return FALSE;
+		}
+ }
+ 
+ void getRestore(uint32_t* cntSamples, bool* repCh0, bool* autostart){
+	 if(FlashRead(pInfo)!= 0xFFFFFFFF){
+		 *cntSamples = FlashRead(pInfo);
+	 }
+	 *repCh0 = uint32_t_to_bool(FlashRead(pInfo + sizeof(uint32_t)));
+	 *autostart = uint32_t_to_bool(FlashRead(pInfo + sizeof(uint32_t)));
+ }
+ 
+ 
+void getBackup(uint32_t* cntSamples, bool* repCh0, bool* autostart){
+	uint32_t tmpArray[32U];
+	tmpArray[0] = *cntSamples;
+	tmpArray[1] = bool_to_uint32_t(*repCh0);
+	tmpArray[2] = bool_to_uint32_t(*autostart);
+	FlashWrite((uint32_t) pInfo, tmpArray);
+ }
