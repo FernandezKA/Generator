@@ -34,7 +34,7 @@ int main(){
 				 case start:
 					 status_gen(recData, TRUE);
 					 print("Start generation\n\r");
-					 detCmd = undef;				 
+					 detCmd = undef;
 				 break;
 				 
 				 case stop:
@@ -77,7 +77,13 @@ int main(){
 					 else{
 					 if(ReceiveSample(recData)){  //Detect stop only for full time added
 						if(recTime == (uint32_t) 0UL){
-								FlashWrite((uint32_t) pBeginCh0 + (countSampleCh0/0x20)*sizeof(uint32_t), &samplesCh0[0]);
+							if(countSampleCh0 < 0x20){
+								FlashWrite((uint32_t) pBeginCh0, samplesCh0);
+							}
+							else{
+								FlashWrite((uint32_t) pBeginCh0 + ((countSampleCh0/0x20))*0x20*sizeof(uint32_t), &samplesCh0[0]);
+							}
+
 								getBackup(&countSampleCh0, &repeat_ch0, &autostartCh0);
 								print("Load is ended\n\r");
 								detCmd = undef;

@@ -29,7 +29,7 @@ void TIM0_Handler(void){
 	 }
 	 else if(countSampleCh0 - 1 == currSampleCh0 && countSampleCh0 != 0){
 		 if(repeat_ch0){
-				TIMER_CREP(SMP_TIMER) = (uint16_t) ((GetSample(currSampleCh0++, pBeginCh0) & 0xFFFF0000)>>16); 
+				TIMER_CREP(SMP_TIMER) = (uint16_t) ((GetSample(currSampleCh0, pBeginCh0) & 0xFFFF0000)>>16); 
 				TIMER_CAR(SMP_TIMER) = (uint16_t) (GetSample(currSampleCh0, pBeginCh0) & 0xFFFF);
 				GPIO_OCTL(GPIOB)^=(1<<12);
 				currSampleCh0 = 0;
@@ -64,14 +64,21 @@ bool status_gen(uint8_t channel, bool state){
 
  //BUG HERE
  void AddSample(uint32_t sample){
-	 if(countSampleCh0%0x20 == 0 && countSampleCh0 != 0){ //Get backup,if we receive one page of data
-		 //FlashErase((uint32_t) pBeginCh0 + countSampleCh0*sizeof(uint32_t));
-		 FlashWrite((uint32_t) pBeginCh0 + countSampleCh0*sizeof(uint32_t) - 0x80, samplesCh0);
-		 ++countSampleCh0;
+	 if(countSampleCh0%0x20 == 0x1F && countSampleCh0 != 0){
+		 samplesCh0[countSampleCh0++%0x20] = sample;
+		 FlashWrite((uint32_t) pBeginCh0 + (countSampleCh0)*sizeof(uint32_t) - 0x80, samplesCh0);
 	 }
 	 else{
-		samplesCh0[(countSampleCh0++)%0x20] = sample;
+		 samplesCh0[countSampleCh0++%0x20] = sample;
 	 }
+//	 if(countSampleCh0%0x1F == 0 && countSampleCh0 != 0){ //Get backup,if we receive one page of data
+//		 samplesCh0[(countSampleCh0++)%0x20] = sample;
+//		 FlashWrite((uint32_t) pBeginCh0 + countSampleCh0*sizeof(uint32_t) - 0x80, samplesCh0);
+//		 ++countSampleCh0;
+//	 }
+//	 else{
+//		samplesCh0[(countSampleCh0++)%0x1F] = sample;
+//	 }
  }
  //
  bool status_repeat(uint8_t channel, bool state){
