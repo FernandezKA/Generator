@@ -7,6 +7,9 @@ uint8_t part_received = 0x00;
 
 uint32_t GetSample(uint32_t currIndex, uint32_t* pTable){
 	uint32_t data = FlashRead((uint32_t*) ((uint32_t) pTable + (currIndex) * sizeof(uint32_t)));
+	if(data > 1){
+		 data--;
+	}
 	return data;
 }
 

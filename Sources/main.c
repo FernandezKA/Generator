@@ -59,12 +59,16 @@ int main(){
 				 
 				 case set_autostart:
 					 autostartCh0 = TRUE;
+				 print("Set autostart\n\r");
 					getBackup(&countSampleCh0, &repeat_ch0, &autostartCh0);
+				 detCmd = undef;
 				 break;
 				 
 				 case reset_autostart:
 					 autostartCh0 = FALSE;
+				 print("Reset autostart\n\r");
 					 getBackup(&countSampleCh0, &repeat_ch0, &autostartCh0);
+				 detCmd = undef;
 				 break;
 				 
 				 case start_load:
