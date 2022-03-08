@@ -58,16 +58,16 @@ int main(){
 				 break;
 				 
 				 case set_autostart:
-					 autostartCh0 = TRUE;
+				 autostartCh0 = TRUE;
 				 print("Set autostart\n\r");
-					getBackup(&countSampleCh0, &repeat_ch0, &autostartCh0);
+				 getBackup(&countSampleCh0, &repeat_ch0, &autostartCh0);
 				 detCmd = undef;
 				 break;
 				 
 				 case reset_autostart:
-					 autostartCh0 = FALSE;
+				 autostartCh0 = FALSE;
 				 print("Reset autostart\n\r");
-					 getBackup(&countSampleCh0, &repeat_ch0, &autostartCh0);
+				 getBackup(&countSampleCh0, &repeat_ch0, &autostartCh0);
 				 detCmd = undef;
 				 break;
 				 
@@ -93,7 +93,6 @@ int main(){
 							else{
 								FlashWrite((uint32_t) pBeginCh0 + ((countSampleCh0/0x20))*0x20*sizeof(uint32_t), &samplesCh0[0]);
 							}
-
 								getBackup(&countSampleCh0, &repeat_ch0, &autostartCh0);
 								print("Load is ended\n\r");
 								detCmd = undef;

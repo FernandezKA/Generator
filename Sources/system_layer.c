@@ -99,15 +99,15 @@ bool status_gen(uint8_t channel, bool state){
  
  static inline uint32_t bool_to_uint32_t(bool state){
 		if(state){
-			 return 0;
+			 return 0xF0F0F0F0;
 		}
 		else{
-			 return 0xFFFFFFFF;
+			 return 0;
 		}
  }
  
  static inline bool uint32_t_to_bool(uint32_t value){
-		if(value == 0){
+		if(value == 0xF0F0F0F0){
 			 return TRUE;
 		}
 		else{
@@ -119,15 +119,16 @@ bool status_gen(uint8_t channel, bool state){
 	 if(FlashRead(pInfo)!= 0xFFFFFFFF){
 		 *cntSamples = FlashRead(pInfo);
 	 }
-	 *repCh0 = uint32_t_to_bool(FlashRead(pInfo + sizeof(uint32_t)));
-	 *autostart = uint32_t_to_bool(FlashRead(pInfo + sizeof(uint32_t)));
+	 *repCh0 = uint32_t_to_bool(pInfo[1]);
+	 *autostart = uint32_t_to_bool(pInfo[2]);
  }
  
  
 void getBackup(uint32_t* cntSamples, bool* repCh0, bool* autostart){
-	uint32_t tmpArray[32U];
+	volatile static uint32_t tmpArray[32U];
 	tmpArray[0] = *cntSamples;
 	tmpArray[1] = bool_to_uint32_t(*repCh0);
 	tmpArray[2] = bool_to_uint32_t(*autostart);
+	FlashErase((uint32_t) pInfo);
 	FlashWrite((uint32_t) pInfo, tmpArray);
  }
