@@ -39,6 +39,7 @@ void TIM0_Handler(void){
 		 else{
 			 currSampleCh0 = 0;
 			 StopGenCh0(); 
+			 GPIO_OCTL(GPIOB)^=(1<<12);
 		 }
 }
 	 }
