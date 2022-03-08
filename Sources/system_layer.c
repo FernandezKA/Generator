@@ -21,8 +21,9 @@ void USART_RX_Handler(uint32_t data){
 
 void TIM0_Handler(void){
 	 if(currSampleCh0 < countSampleCh0 - 1 && countSampleCh0 != 0){
-			TIMER_CREP(SMP_TIMER) = (uint16_t) ((GetSample(currSampleCh0++, pBeginCh0) & 0xFFFF0000)>>16); 
+			TIMER_CREP(SMP_TIMER) = (uint16_t) ((GetSample(currSampleCh0, pBeginCh0) & 0xFFFF0000)>>16); 
 			TIMER_CAR(SMP_TIMER) = (uint16_t) (GetSample(currSampleCh0, pBeginCh0) & 0xFFFF);
+			currSampleCh0++;
 			GPIO_OCTL(GPIOB)^=(1<<12);
 		 //GPIO_CH0_STATE((currSampleCh0%parity) == 0x00);
 		  TIMER_CTL0(SMP_TIMER)|=TIMER_CTL0_CEN;
