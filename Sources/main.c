@@ -11,9 +11,11 @@ int main(){
 	getRestore(&countSampleCh0, &repeat_ch0, &autostartCh0);
 	if(autostartCh0){
 		 status_gen(0, TRUE);
+		 print("Autostart enable\n\r");
 	}
 	else{
 		 status_gen(0, FALSE);
+		 print("Autostart disable\n\r");
 	}
 	print("Generator v 0.1 2022-03-04\n\r");
 	enum command detCmd = undef;
@@ -99,6 +101,33 @@ int main(){
 						}
 					 }
 				 }
+				 break;
+				 
+				 case get_info:
+						 if(recData == 0x00){ //For terminal
+							 print("Generator v 0.2 2022-03-15\n\r");
+							 if(countSampleCh0 == 0){
+									 print("Generator don't have samples\n\r");
+							 } 
+							 
+							 if(repeat_ch0){
+									print("Repeat enable\n\r");
+							 }
+							 else{
+									print("Repeat disable\n\r");
+							 }
+							 
+							 if(autostartCh0){
+								 print("Autostart enable\n\r");
+							 }
+							 else{
+									print("Autostart disable\n\r");
+							 }
+						 }
+						 else{  //For GUI
+							 
+						 }
+						 detCmd = undef;
 				 break;
 			 }
 		 }

@@ -64,7 +64,6 @@ bool status_gen(uint8_t channel, bool state){
 	 return status;
 }
 
- //BUG HERE
  void AddSample(uint32_t sample){
 	 if(countSampleCh0%0x20 == 0x1F && countSampleCh0 != 0){
 		 samplesCh0[countSampleCh0++%0x20] = sample;
@@ -73,14 +72,6 @@ bool status_gen(uint8_t channel, bool state){
 	 else{
 		 samplesCh0[countSampleCh0++%0x20] = sample;
 	 }
-//	 if(countSampleCh0%0x1F == 0 && countSampleCh0 != 0){ //Get backup,if we receive one page of data
-//		 samplesCh0[(countSampleCh0++)%0x20] = sample;
-//		 FlashWrite((uint32_t) pBeginCh0 + countSampleCh0*sizeof(uint32_t) - 0x80, samplesCh0);
-//		 ++countSampleCh0;
-//	 }
-//	 else{
-//		samplesCh0[(countSampleCh0++)%0x1F] = sample;
-//	 }
  }
  //
  bool status_repeat(uint8_t channel, bool state){

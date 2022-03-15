@@ -10,7 +10,8 @@ enum command {
 	reset_repeat, 
 	set_autostart, 
 	reset_autostart, 
-	start_load
+	start_load, 
+	get_info
 };
 
 enum command DetectCommand(uint8_t data);
