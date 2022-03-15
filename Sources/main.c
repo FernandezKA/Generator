@@ -9,7 +9,7 @@ static inline void SysInit(void);
 int main(){
 	SysInit();
 	getRestore(&countSampleCh0, &repeat_ch0, &autostartCh0);
-	print("Generator v 0.1 2022-03-04\n\r");
+	print("Generator v 0.2 2022-03-15\n\r");
 	if(autostartCh0){
 		 status_gen(0, TRUE);
 		 print("Autostart enable\n\r");
@@ -47,7 +47,7 @@ int main(){
 				 
 				 case set_repeat:
 					 status_repeat(recData, TRUE);
-					 print("Reapeat flag set\n\r");
+					 print("Repeat flag set\n\r");
 					 getBackup(&countSampleCh0, &repeat_ch0, &autostartCh0);
 					 detCmd = undef;
 				 break;
@@ -110,7 +110,7 @@ int main(){
 									 print("Generator don't have samples\n\r");
 							 } 
 							 else{
-									print("Genrator have samples \n\r");
+									print("Generator have samples \n\r");
 							 }
 							 
 							 if(repeat_ch0){
