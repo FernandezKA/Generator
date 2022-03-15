@@ -9,6 +9,7 @@ static inline void SysInit(void);
 int main(){
 	SysInit();
 	getRestore(&countSampleCh0, &repeat_ch0, &autostartCh0);
+	print("Generator v 0.1 2022-03-04\n\r");
 	if(autostartCh0){
 		 status_gen(0, TRUE);
 		 print("Autostart enable\n\r");
@@ -17,7 +18,6 @@ int main(){
 		 status_gen(0, FALSE);
 		 print("Autostart disable\n\r");
 	}
-	print("Generator v 0.1 2022-03-04\n\r");
 	enum command detCmd = undef;
 	 for(;;){
 		 if(GetSize(&RS232_RX) != 0){
@@ -109,6 +109,9 @@ int main(){
 							 if(countSampleCh0 == 0){
 									 print("Generator don't have samples\n\r");
 							 } 
+							 else{
+									print("Genrator have samples \n\r");
+							 }
 							 
 							 if(repeat_ch0){
 									print("Repeat enable\n\r");
@@ -125,23 +128,25 @@ int main(){
 							 }
 						 }
 						 else{  //For GUI
-							 char arrayGui[4];
+							 char arrayGui[6];
 							 if(repeat_ch0){
-									arrayGui[0] = '1';
+									arrayGui[0] = 0xFF;
 							 }
 							 else{
-									arrayGui[0] = '0';
+									arrayGui[0] = 0x00;
 							 }
 							 
 							 if(autostartCh0){
-								 arrayGui[1] = '1';
+								 arrayGui[1] = 0xFF;
 							 }
 							 else{
-									arrayGui[1] = '0';
+									arrayGui[1] = 0x00;
 							 }
+							 arrayGui[2] = (uint8_t)((countSampleCh0 >> 8)&0xFF);
+							 arrayGui[3] = (uint8_t)(countSampleCh0&0xFF);
 							 
-							 arrayGui[2] = 0x0D;
-							 arrayGui[3] = 0x0A;
+							 arrayGui[4] = 0x0D;
+							 arrayGui[5] = 0x0A;
 							 
 							 print(arrayGui);
 						 }
