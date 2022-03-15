@@ -125,7 +125,25 @@ int main(){
 							 }
 						 }
 						 else{  //For GUI
+							 char arrayGui[4];
+							 if(repeat_ch0){
+									arrayGui[0] = '1';
+							 }
+							 else{
+									arrayGui[0] = '0';
+							 }
 							 
+							 if(autostartCh0){
+								 arrayGui[1] = '1';
+							 }
+							 else{
+									arrayGui[1] = '0';
+							 }
+							 
+							 arrayGui[2] = 0x0D;
+							 arrayGui[3] = 0x0A;
+							 
+							 print(arrayGui);
 						 }
 						 detCmd = undef;
 				 break;
