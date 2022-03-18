@@ -2,21 +2,28 @@
 
 
 void CLK_Init(void){
-	RCU_APB2EN |= RCU_APB2EN_USART0EN;
-	RCU_APB2EN |= RCU_APB2EN_PAEN;
-	RCU_APB2EN |= RCU_APB2EN_PBEN;
-	RCU_APB2EN |= RCU_APB2EN_PCEN;
+	//RCU_APB2EN |= RCU_APB2EN_USART0EN;
+	RCU_APB2EN |= RCU_APB2EN_PAEN | RCU_APB2EN_PBEN | RCU_APB2EN_PCEN;
 	RCU_APB1EN |= RCU_APB1EN_TIMER1EN;
 	RCU_APB2EN |= RCU_APB2EN_TIMER0EN;
+	rcu_periph_clock_enable(RCU_USBD);
+	
+	rcu_ckout0_config(RCU_CKOUT0SRC_CKSYS);
+	rcu_usb_clock_config(RCU_CKUSB_CKPLL_DIV1_5);
 }
 
 void GPIO_Init(void){
 	//This gpio used for USART_PC
 	gpio_afio_deinit();
-	gpio_init(GPIOA, GPIO_MODE_AF_PP, GPIO_OSPEED_50MHZ, GPIO_PIN_9); //PA9 as TX
-	gpio_init(GPIOA, GPIO_MODE_IPD, GPIO_OSPEED_50MHZ, GPIO_PIN_10);  //PA10 as RX
+	//gpio_init(GPIOA, GPIO_MODE_AF_PP, GPIO_OSPEED_50MHZ, GPIO_PIN_9); //PA9 as TX
+	//gpio_init(GPIOA, GPIO_MODE_IPD, GPIO_OSPEED_50MHZ, GPIO_PIN_10);  //PA10 as RX
+	
 	//This gpio used for led indicated
 	gpio_init(GPIOC, GPIO_MODE_OUT_OD, GPIO_OSPEED_10MHZ, GPIO_PIN_13);
+	gpio_init(GPIOA, GPIO_MODE_AF_PP, GPIO_OSPEED_50MHZ, GPIO_PIN_11);  //usb
+	gpio_init(GPIOA, GPIO_MODE_AF_PP, GPIO_OSPEED_50MHZ, GPIO_PIN_12);  //usb
+	
+	gpio_init(GPIOA, GPIO_MODE_AF_PP, GPIO_OSPEED_50MHZ, GPIO_PIN_8); //CLK OUT
 	//Used for generation
 	gpio_init(GPIOB, GPIO_MODE_OUT_PP, GPIO_OSPEED_50MHZ, GPIO_PIN_12);
 	
@@ -35,7 +42,6 @@ void TIMERS_Init(void){
 	timer_init(SMP_TIMER, &tim0);
 	timer_interrupt_enable(SMP_TIMER, TIMER_INT_UP); // Interrrupt at overflow
 	TIMER_CTL0(SMP_TIMER)|=TIMER_CTL0_SPM;
-	
 	
 	timer_deinit(LED_TIMER);
 	timer_parameter_struct tim1;
@@ -106,7 +112,9 @@ void GPIO_CH0_STATE(bool state){
 }
 
 void IRQ_Enable(void){
-	nvic_irq_enable(USART0_IRQn, 2, 1); // For UART0_PC
+	//nvic_irq_enable(USART0_IRQn, 2, 1); // For UART0_PC
 	nvic_irq_enable(TIMER1_IRQn, 3, 3);
 	nvic_irq_enable(TIMER0_UP_IRQn, 2, 2);
+	nvic_priority_group_set(NVIC_PRIGROUP_PRE1_SUB3);
+	nvic_irq_enable(USBD_LP_CAN0_RX0_IRQn, 1, 0);
 }
