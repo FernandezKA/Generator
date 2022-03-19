@@ -13,6 +13,7 @@ uint32_t currSampleCh0 = 0;
 uint32_t countSampleCh0 = 0;
 
 struct fifo RS232_RX;
+struct fifo RS232_TX;
 
 //IRQ handlers
 void USART_RX_Handler(uint32_t data){

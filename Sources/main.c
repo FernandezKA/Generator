@@ -5,9 +5,6 @@
 #include "protocol.h"
 #include "cdc_core.h"
 
-extern uint8_t packet_sent, packet_receive;
-extern uint32_t receive_length;
-extern uint8_t usb_data_buffer[CDC_ACM_DATA_PACKET_SIZE];
 
 usbd_core_handle_struct usb_device_dev =
 	{
@@ -18,6 +15,32 @@ usbd_core_handle_struct usb_device_dev =
 		.class_deinit = cdc_acm_deinit,
 		.class_req_handler = cdc_acm_req_handler,
 		.class_data_handler = cdc_acm_data_handler};
+	
+		
+extern uint8_t packet_sent, packet_receive;
+extern uint32_t receive_length;
+extern uint8_t usb_data_buffer[CDC_ACM_DATA_PACKET_SIZE];
+		
+//static inline void print(char* pData){
+//	uint8_t countSend = 0;
+//	char lastChar = 0;
+//	char currChar = 0;
+//	bool isEnd = FALSE;
+//	while(!isEnd && countSend != 0xFF){
+//		lastChar = currChar;
+//		currChar = pData[countSend++];
+//		if((lastChar == 0x0A) && (currChar == 0x0D)){
+//			 isEnd = TRUE;
+//		}
+//		else if((lastChar == 0x0D) && (currChar == 0x0A)){
+//			 isEnd = TRUE;
+//		}
+//		usb_data_buffer[countSend] = currChar;
+//	}
+//	if (USBD_CONFIGURED == usb_device_dev.status){
+//	cdc_acm_data_send(&usb_device_dev, countSend + 1);
+//	}
+//}
 
 static inline void SysInit(void);
 
@@ -52,11 +75,23 @@ int main()
 				if (0 != receive_length)
 				{
 					/* send receive datas */
+//					for(uint8_t i = 0; i < receive_length; ++i){
+//						 Push(&RS232_RX, usb_data_buffer[i]);
+//						 cdc_acm_data_send(&usb_device_dev, 1);
+//					}
 					cdc_acm_data_send(&usb_device_dev, receive_length);
 					receive_length = 0;
 				}
 			}
 		}
+		
+//		if(GetSize(&RS232_TX) != 0){
+//			 uint8_t size = GetSize(&RS232_TX);
+//			 for(uint8_t i = 0; i < GetSize(&RS232_TX); ++i){
+//				 usb_data_buffer[i] = Pull(&RS232_TX);
+//			 }
+//			 cdc_acm_data_send(&usb_device_dev, size);
+//		}
 		/*******************************************************************************/
 		if (GetSize(&RS232_RX) != 0)
 		{
