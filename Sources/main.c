@@ -5,6 +5,8 @@
 #include "protocol.h"
 #include "cdc_core.h"
 
+uint8_t status;
+
 //For usbd implementation 
 extern uint8_t packet_sent, packet_receive;
 extern uint32_t receive_length;
@@ -45,7 +47,7 @@ static inline void print(char* pMsg){
 	#ifndef USART 
 		if (USBD_CONFIGURED == usb_device_dev.status)
 		{
-		cdc_acm_data_send(&usb_device_dev, countSend - 1U);  \
+		cdc_acm_data_send(&usb_device_dev, countSend);  \
 		}
 	#endif
 }
@@ -85,7 +87,12 @@ int main()
 					for(uint8_t i = 0; i < receive_length; ++i){
 						 Push(&RS232_RX, usb_data_buffer[i]);
 					}
-					//cdc_acm_data_send(&usb_device_dev, receive_length);
+					
+					//packet_sent = 0;
+					//packet_receive = 0;
+					
+					cdc_acm_data_send(&usb_device_dev, 0);
+					//status = cdc_acm_EP0_RxReady(&usb_device_dev);
 					receive_length = 0;
 				}
 			}
