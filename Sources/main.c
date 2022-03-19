@@ -5,8 +5,6 @@
 #include "protocol.h"
 #include "cdc_core.h"
 
-uint8_t status;
-
 //For usbd implementation 
 extern uint8_t packet_sent, packet_receive;
 extern uint32_t receive_length;
@@ -56,17 +54,6 @@ int main()
 {
 	SysInit();
 	getRestore(&countSampleCh0, &repeat_ch0, &autostartCh0);
-	print("Generator v 1.0 2022-03-19\n\r");
-	if (autostartCh0)
-	{
-		status_gen(0, TRUE);
-		print("Autostart enable\n\r");
-	}
-	else
-	{
-		status_gen(0, FALSE);
-		print("Autostart disable\n\r");
-	}
 	enum command detCmd = undef;
 	for (;;)
 	{
@@ -87,12 +74,7 @@ int main()
 					for(uint8_t i = 0; i < receive_length; ++i){
 						 Push(&RS232_RX, usb_data_buffer[i]);
 					}
-					
-					//packet_sent = 0;
-					//packet_receive = 0;
-					
 					cdc_acm_data_send(&usb_device_dev, 0);
-					//status = cdc_acm_EP0_RxReady(&usb_device_dev);
 					receive_length = 0;
 				}
 			}
@@ -196,33 +178,37 @@ int main()
 			case get_info:
 				if (recData == 0x00)
 				{ // For terminal
-					print("Generator v 0.2 2022-03-15\n\r");
+					
+					char msg[] = "Generator v 1.0 2022-03-19 Samples: * Repeat: * Autostart: *\n\r";
+					
+//					print("Generator v 1.0 2022-03-19\n\r");
 					if (countSampleCh0 == 0)
 					{
-						print("Generator don't have samples\n\r");
+						 msg[36U] = '0';
 					}
 					else
 					{
-						print("Generator have samples \n\r");
+						msg[36U] = '1';
 					}
 
 					if (repeat_ch0)
 					{
-						print("Repeat enable\n\r");
+						msg[46U] = '1';
 					}
 					else
 					{
-						print("Repeat disable\n\r");
+						msg[46U] = '0';
 					}
 
 					if (autostartCh0)
 					{
-						print("Autostart enable\n\r");
+						msg[59U] = '1';
 					}
 					else
 					{
-						print("Autostart disable\n\r");
+						msg[59U] = '0';
 					}
+			print(msg);
 				}
 				else
 				{ // For GUI
