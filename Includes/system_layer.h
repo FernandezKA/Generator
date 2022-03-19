@@ -12,7 +12,6 @@ extern bool 		autostartCh0;
 
 
 extern struct fifo RS232_RX;
-extern struct fifo RS232_TX;
 
 extern bool repeat_ch0;
 extern uint8_t parity;

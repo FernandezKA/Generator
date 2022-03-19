@@ -112,9 +112,12 @@ void GPIO_CH0_STATE(bool state){
 }
 
 void IRQ_Enable(void){
-	//nvic_irq_enable(USART0_IRQn, 2, 1); // For UART0_PC
-	nvic_irq_enable(TIMER1_IRQn, 3, 3);
-	nvic_irq_enable(TIMER0_UP_IRQn, 2, 2);
+	#ifdef USART
+	nvic_irq_enable(USART0_IRQn, 2, 1); // For UART0_PC
+	#else 
 	nvic_priority_group_set(NVIC_PRIGROUP_PRE1_SUB3);
 	nvic_irq_enable(USBD_LP_CAN0_RX0_IRQn, 1, 0);
+	#endif
+	nvic_irq_enable(TIMER1_IRQn, 3, 3);
+	nvic_irq_enable(TIMER0_UP_IRQn, 2, 2);
 }

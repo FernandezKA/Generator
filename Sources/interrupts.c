@@ -8,6 +8,7 @@ void USBD_LP_CAN0_RX0_IRQHandler(void)
 
 void USART0_IRQHandler(void)
 {
+	#ifdef USART 
 	volatile uint32_t usart_stat = USART_STAT(USART_PC);
 	if ((usart_stat & USART_STAT_TC) == USART_STAT_TC)
 	{
@@ -17,6 +18,9 @@ void USART0_IRQHandler(void)
 	{
 		USART_STAT(USART_PC) = 0;
 	}
+	#else 
+	 while(1){};
+	#endif 
 }
 
 // Used for indicate activty

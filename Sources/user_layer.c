@@ -32,23 +32,5 @@ bool ReceiveSample(uint8_t time_part){
 	}
  }
 
-void print(char* pMsg){
-	uint8_t countSend = 0;
-	char lastChar = 0;
-	char currChar = 0;
-	bool isEnd = FALSE;
-	while(!isEnd && countSend != 0xFF){
-		lastChar = currChar;
-		currChar = pMsg[countSend++];
-		if((lastChar == 0x0A) && (currChar == 0x0D)){
-			 isEnd = TRUE;
-		}
-		else if((lastChar == 0x0D) && (currChar == 0x0A)){
-			 isEnd = TRUE;
-		}
-//		while((USART_STAT(USART_PC)&USART_STAT_TBE) != USART_STAT_TBE){__NOP();}
-//		usart_data_transmit(USART_PC, currChar);
-		 Push(&RS232_TX, currChar);
-	}
-}
+
 

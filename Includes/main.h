@@ -4,6 +4,8 @@
 
 #define TRUE true
 #define FALSE false
+	
+#define USB_VCP
 
 #include "gd32f10x.h"
 #include "gd32f10x_usart.h"

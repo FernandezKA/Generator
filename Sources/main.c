@@ -5,6 +5,10 @@
 #include "protocol.h"
 #include "cdc_core.h"
 
+//For usbd implementation 
+extern uint8_t packet_sent, packet_receive;
+extern uint32_t receive_length;
+extern uint8_t usb_data_buffer[CDC_ACM_DATA_PACKET_SIZE];
 
 usbd_core_handle_struct usb_device_dev =
 	{
@@ -15,35 +19,37 @@ usbd_core_handle_struct usb_device_dev =
 		.class_deinit = cdc_acm_deinit,
 		.class_req_handler = cdc_acm_req_handler,
 		.class_data_handler = cdc_acm_data_handler};
-	
-		
-extern uint8_t packet_sent, packet_receive;
-extern uint32_t receive_length;
-extern uint8_t usb_data_buffer[CDC_ACM_DATA_PACKET_SIZE];
-		
-//static inline void print(char* pData){
-//	uint8_t countSend = 0;
-//	char lastChar = 0;
-//	char currChar = 0;
-//	bool isEnd = FALSE;
-//	while(!isEnd && countSend != 0xFF){
-//		lastChar = currChar;
-//		currChar = pData[countSend++];
-//		if((lastChar == 0x0A) && (currChar == 0x0D)){
-//			 isEnd = TRUE;
-//		}
-//		else if((lastChar == 0x0D) && (currChar == 0x0A)){
-//			 isEnd = TRUE;
-//		}
-//		usb_data_buffer[countSend] = currChar;
-//	}
-//	if (USBD_CONFIGURED == usb_device_dev.status){
-//	cdc_acm_data_send(&usb_device_dev, countSend + 1);
-//	}
-//}
-
+//Function declaration
 static inline void SysInit(void);
 
+static inline void print(char* pMsg){
+	uint8_t countSend = 0;
+	char lastChar = 0;
+	char currChar = 0;
+	bool isEnd = FALSE;
+	while(!isEnd && countSend != 0xFF){
+		lastChar = currChar;
+		currChar = pMsg[countSend++];
+		if((lastChar == 0x0A) && (currChar == 0x0D)){
+			 isEnd = TRUE;
+		}
+		else if((lastChar == 0x0D) && (currChar == 0x0A)){
+			 isEnd = TRUE;
+		}
+		usb_data_buffer[countSend] = currChar;
+		#ifdef USART 
+		while((USART_STAT(USART_PC)&USART_STAT_TBE) != USART_STAT_TBE){__NOP();}
+		usart_data_transmit(USART_PC, currChar);
+		#endif
+	}
+	#ifndef USART 
+		if (USBD_CONFIGURED == usb_device_dev.status)
+		{
+		cdc_acm_data_send(&usb_device_dev, countSend - 1U);  \
+		}
+	#endif
+}
+		
 int main()
 {
 	SysInit();
@@ -62,6 +68,7 @@ int main()
 	enum command detCmd = undef;
 	for (;;)
 	{
+		//USBD chech buffer
 		if (USBD_CONFIGURED == usb_device_dev.status)
 		{
 			if (1 == packet_receive && 1 == packet_sent)
@@ -75,29 +82,21 @@ int main()
 				if (0 != receive_length)
 				{
 					/* send receive datas */
-//					for(uint8_t i = 0; i < receive_length; ++i){
-//						 Push(&RS232_RX, usb_data_buffer[i]);
-//						 cdc_acm_data_send(&usb_device_dev, 1);
-//					}
-					cdc_acm_data_send(&usb_device_dev, receive_length);
+					for(uint8_t i = 0; i < receive_length; ++i){
+						 Push(&RS232_RX, usb_data_buffer[i]);
+					}
+					//cdc_acm_data_send(&usb_device_dev, receive_length);
 					receive_length = 0;
 				}
 			}
 		}
-		
-//		if(GetSize(&RS232_TX) != 0){
-//			 uint8_t size = GetSize(&RS232_TX);
-//			 for(uint8_t i = 0; i < GetSize(&RS232_TX); ++i){
-//				 usb_data_buffer[i] = Pull(&RS232_TX);
-//			 }
-//			 cdc_acm_data_send(&usb_device_dev, size);
-//		}
 		/*******************************************************************************/
 		if (GetSize(&RS232_RX) != 0)
 		{
 			uint8_t recData = Pull(&RS232_RX);
 			switch (detCmd)
 			{
+				//In this case we parse input data
 			case undef:
 				detCmd = DetectCommand(recData);
 				if (detCmd == start_load)
@@ -258,7 +257,10 @@ static inline void SysInit(void)
 	CLK_Init();
 	GPIO_Init();
 	TIMERS_Init();
+	#ifndef USART
 	usbd_core_init(&usb_device_dev);
-	// USART_Init();
+	#else
+	USART_Init();
+	#endif
 	IRQ_Enable();
 }
