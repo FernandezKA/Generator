@@ -35,7 +35,7 @@ void TIMERS_Init(void){
 	//Timer for CH1
 	timer_deinit(SMP_TIMER);
 	timer_parameter_struct tim0;
-	tim0.prescaler = 1072; // 10uS for each step
+	tim0.prescaler = 719; // 10uS for each step
 	tim0.alignedmode = TIMER_COUNTER_EDGE;
 	tim0.counterdirection = TIMER_COUNTER_UP;
 	tim0.period = 9;

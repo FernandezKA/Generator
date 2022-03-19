@@ -54,6 +54,13 @@ int main()
 {
 	SysInit();
 	getRestore(&countSampleCh0, &repeat_ch0, &autostartCh0);
+		if(autostartCh0){
+		 status_gen(0, TRUE);
+	}
+	else{
+		 status_gen(0, FALSE);
+	}
+	
 	enum command detCmd = undef;
 	for (;;)
 	{
@@ -74,7 +81,7 @@ int main()
 					for(uint8_t i = 0; i < receive_length; ++i){
 						 Push(&RS232_RX, usb_data_buffer[i]);
 					}
-					cdc_acm_data_send(&usb_device_dev, 0);
+					cdc_acm_data_send(&usb_device_dev, 0);//a little of black magic
 					receive_length = 0;
 				}
 			}
