@@ -36,7 +36,7 @@ static inline void print(char* pMsg){
 		else if((lastChar == 0x0D) && (currChar == 0x0A)){
 			 isEnd = TRUE;
 		}
-		usb_data_buffer[countSend] = currChar;
+		usb_data_buffer[countSend - 1] = currChar;
 		#ifdef USART 
 		while((USART_STAT(USART_PC)&USART_STAT_TBE) != USART_STAT_TBE){__NOP();}
 		usart_data_transmit(USART_PC, currChar);
@@ -81,7 +81,9 @@ int main()
 					for(uint8_t i = 0; i < receive_length; ++i){
 						 Push(&RS232_RX, usb_data_buffer[i]);
 					}
-					cdc_acm_data_send(&usb_device_dev, 0);//a little of black magic
+					 cdc_acm_data_send(&usb_device_dev, 0);
+//					packet_receive = 0;
+//					packet_sent = 0;
 					receive_length = 0;
 				}
 			}
