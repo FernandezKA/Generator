@@ -45,7 +45,7 @@ static inline void print(char* pMsg){
 	#ifndef USART 
 		if (USBD_CONFIGURED == usb_device_dev.status)
 		{
-		cdc_acm_data_send(&usb_device_dev, countSend);  \
+		cdc_acm_data_send(&usb_device_dev, countSend);
 		}
 	#endif
 }
@@ -67,25 +67,17 @@ int main()
 		//USBD chech buffer
 		if (USBD_CONFIGURED == usb_device_dev.status)
 		{
-			if (1 == packet_receive && 1 == packet_sent)
-			{
-				packet_sent = 0;
-				/* receive datas from the host when the last packet datas have sent to the host */
+			if(1 == packet_receive){
 				cdc_acm_data_receive(&usb_device_dev);
 			}
-			else
-			{
-				if (0 != receive_length)
-				{
-					/* send receive datas */
-					for(uint8_t i = 0; i < receive_length; ++i){
+			else{
+				 if(0 != receive_length){
+					 for(uint8_t i = 0; i < receive_length; ++i){
 						 Push(&RS232_RX, usb_data_buffer[i]);
-					}
-					 cdc_acm_data_send(&usb_device_dev, 0);
-//					packet_receive = 0;
-//					packet_sent = 0;
-					receive_length = 0;
-				}
+						 usart_data_transmit(USART0, usb_data_buffer[i]);
+						}
+					 	receive_length = 0;
+				 }
 			}
 		}
 		/*******************************************************************************/
