@@ -1,4 +1,4 @@
-Project: Generator V 1.0
+Project: Generator V 1.1
 2022-03-19
 
 Fclk: HXTAL 8 MHz

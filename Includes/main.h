@@ -1,9 +1,9 @@
 #pragma once
 #include <stdint.h>
-#include <stdbool.h>
+//#include <stdbool.h>
 
-#define TRUE true
-#define FALSE false
+//#define TRUE true
+//#define FALSE false
 	
 #define USB_VCP
 

@@ -40,6 +40,7 @@ uint16_t GetSize(FIFO *buf)
 	}
 }
 
+
 void Clear(FIFO *buf)
 {
 	buf->Head = 0x00;
