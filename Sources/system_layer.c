@@ -53,6 +53,14 @@ void TIM0_Handler(void)
 			currSampleCh0 = 0x00U;
 			GPIO_OCTL(GPIOB) ^= (1 << 12);
 			TIMER_CTL0(SMP_TIMER) |= TIMER_CTL0_CEN;
+			if (parity == 0x00)
+			{
+						GPIO_OCTL(GPIOB) &= ~(1U << 12);
+			}
+			else
+			{
+					  GPIO_OCTL(GPIOB) |= (1U << 12);
+			}
 			TimReset();
 		}
 		else
@@ -60,6 +68,14 @@ void TIM0_Handler(void)
 			currSampleCh0 = 0;
 			StopGenCh0();
 			GPIO_OCTL(GPIOB) ^= (1 << 12);
+			if (parity == 0x00)
+			{
+						GPIO_OCTL(GPIOB) &= ~(1U << 12);
+			}
+			else
+			{
+					  GPIO_OCTL(GPIOB) |= (1U << 12);
+			}
 			TimReset();
 		}
 	}
