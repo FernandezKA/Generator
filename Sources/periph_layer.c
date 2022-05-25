@@ -7,7 +7,6 @@ void CLK_Init(void){
 	RCU_APB1EN |= RCU_APB1EN_TIMER1EN;
 	RCU_APB2EN |= RCU_APB2EN_TIMER0EN;
 	rcu_periph_clock_enable(RCU_USBD);
-	
 	rcu_ckout0_config(RCU_CKOUT0SRC_CKSYS);
 	rcu_usb_clock_config(RCU_CKUSB_CKPLL_DIV1_5);
 }
@@ -22,11 +21,9 @@ void GPIO_Init(void){
 	gpio_init(GPIOC, GPIO_MODE_OUT_OD, GPIO_OSPEED_10MHZ, GPIO_PIN_13);
 	gpio_init(GPIOA, GPIO_MODE_AF_PP, GPIO_OSPEED_50MHZ, GPIO_PIN_11);  //usb
 	gpio_init(GPIOA, GPIO_MODE_AF_PP, GPIO_OSPEED_50MHZ, GPIO_PIN_12);  //usb
-	
 	gpio_init(GPIOA, GPIO_MODE_AF_PP, GPIO_OSPEED_50MHZ, GPIO_PIN_8); //CLK OUT
 	//Used for generation
 	gpio_init(GPIOB, GPIO_MODE_OUT_PP, GPIO_OSPEED_50MHZ, GPIO_PIN_12);
-	
 }
 
 void TIMERS_Init(void){

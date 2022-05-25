@@ -5,8 +5,8 @@ extern uint32_t* pInfo;
 extern uint32_t* pBeginCh0;
 extern uint32_t* pEndCh0;
 
-extern uint32_t currSampleCh0;
-extern uint32_t countSampleCh0;
+extern volatile uint32_t currSampleCh0;
+extern volatile uint32_t countSampleCh0;
 extern uint32_t samplesCh0[32U];
 extern bool 		autostartCh0;
 
@@ -29,3 +29,10 @@ bool status_repeat(uint8_t channel, bool state);
 void getRestore(uint32_t* cntSamples, bool* repCh0, bool* autostart);
 
 void getBackup(uint32_t* cntSamples, bool* repCh0, bool* autostart);
+
+void getTimerReset(void);
+
+static inline void TimReset(void){
+	TIMER_CREP(SMP_TIMER) = (uint16_t) 0x00U; 
+	TIMER_CAR(SMP_TIMER) = (uint16_t) 0x01U;
+}

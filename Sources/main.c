@@ -21,7 +21,6 @@ usbd_core_handle_struct usb_device_dev =
 		.class_data_handler = cdc_acm_data_handler};
 // Function declaration
 static inline void SysInit(void);
-
 static inline void print(char *pMsg)
 {
 	uint8_t countSend = 0;
@@ -119,6 +118,8 @@ int main()
 				TIMER_PSC(LED_TIMER) = 0x3FFF;
 				status_gen(recData, TRUE);
 				print("Start generation\n\r");
+				currSampleCh0 = 0;
+				TimReset();
 				detCmd = undef;
 				break;
 
