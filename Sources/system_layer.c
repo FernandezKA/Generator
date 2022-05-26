@@ -38,20 +38,30 @@ void USART_RX_Handler(uint32_t data)
 
 void TIM0_Handler(void)
 {
-	if (currSampleCh0 < countSampleCh0 && countSampleCh0 != 0)
+	if (currSampleCh0 < countSampleCh0 - 1U&& countSampleCh0 != 0)
 	{
+//////		if(currSampleCh0 == 0x00U){
+//////			if (parity != 0x00)
+//////			{
+//////						GPIO_OCTL(GPIOB) &= ~(1U << 12);
+//////			}
+//////			else
+//////			{
+//////					  GPIO_OCTL(GPIOB) |= (1U << 12);
+//////			}
+//////		}
+		GPIO_OCTL(GPIOB) ^= (1 << 12);
 		get_div(GetSample(currSampleCh0, pBeginCh0), &TIMER_CAR(SMP_TIMER), &TIMER_CREP(SMP_TIMER), &TIMER_PSC(SMP_TIMER));
 		currSampleCh0++;
-		GPIO_OCTL(GPIOB) ^= (1 << 12);
 		TIMER_CTL0(SMP_TIMER) |= TIMER_CTL0_CEN;
 	}
-	else if (countSampleCh0 == currSampleCh0 && countSampleCh0 != 0)
+	else if (countSampleCh0 - 1U == currSampleCh0 && countSampleCh0 != 0)
 	{
 		if (repeat_ch0)
 		{
 			get_div(GetSample(currSampleCh0, pBeginCh0), &TIMER_CAR(SMP_TIMER), &TIMER_CREP(SMP_TIMER), &TIMER_PSC(SMP_TIMER));
 			currSampleCh0 = 0x00U;
-			GPIO_OCTL(GPIOB) ^= (1 << 12);
+			//GPIO_OCTL(GPIOB) ^= (1 << 12);
 			TIMER_CTL0(SMP_TIMER) |= TIMER_CTL0_CEN;
 			if (parity == 0x00)
 			{
@@ -61,13 +71,13 @@ void TIM0_Handler(void)
 			{
 					  GPIO_OCTL(GPIOB) |= (1U << 12);
 			}
-			TimReset();
+			//TimReset();
 		}
 		else
 		{
 			currSampleCh0 = 0;
 			StopGenCh0();
-			GPIO_OCTL(GPIOB) ^= (1 << 12);
+			//GPIO_OCTL(GPIOB) ^= (1 << 12);
 			if (parity == 0x00)
 			{
 						GPIO_OCTL(GPIOB) &= ~(1U << 12);
@@ -76,7 +86,7 @@ void TIM0_Handler(void)
 			{
 					  GPIO_OCTL(GPIOB) |= (1U << 12);
 			}
-			TimReset();
+			//TimReset();
 		}
 	}
 }
