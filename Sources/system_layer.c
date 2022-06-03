@@ -2,12 +2,12 @@
 #include "user_layer.h"
 
 uint32_t *pInfo = (uint32_t *)0x08007C00;
-uint32_t *pBeginCh0 = (uint32_t *)0x08008800; // Page 32
+uint32_t *pBeginCh0 = (uint32_t *)0x08008000; // Page 32
 uint32_t *pEndCh0 = (uint32_t *)0x082FFFFF;	  // Page 64
 bool repeat_ch0 = FALSE;
 bool autostartCh0 = FALSE;
 uint8_t parity = 0xFF;
-uint32_t samplesCh0[32U];
+volatile uint32_t samplesCh0[32U];
 
 volatile uint32_t currSampleCh0 = 0;
 volatile uint32_t countSampleCh0 = 0;
@@ -89,6 +89,7 @@ void AddSample(uint32_t sample)
 	{
 		samplesCh0[countSampleCh0++ % 0x20] = sample;
 		fmc_page_erase((uint32_t) pBeginCh0  + countSampleCh0/0x20 * FMC_PAGE_SIZE);
+		//FlashWrite((uint32_t) pBeginCh0  + countSampleCh0/0x20 * FMC_PAGE_SIZE, samplesCh0);
 		FlashWrite((uint32_t)pBeginCh0 + (countSampleCh0) * sizeof(uint32_t) - 0x80, samplesCh0);
 	}
 	else

@@ -167,15 +167,16 @@ int main()
 			case start_load:
 				if (parity == 0xFF)
 				{ // First byte of packet
-//					for(uint32_t erase_counter = 0; erase_counter < 32; erase_counter++){
+//				for(uint32_t erase_counter = 0; erase_counter < 32; erase_counter++){
 //						fmc_page_erase((uint32_t) pBeginCh0 + erase_counter * FMC_PAGE_SIZE);
-//					}
+//				}
+					fmc_page_erase((uint32_t) pBeginCh0);
 					parity = recData;
 					initial_state = recData;
 					get_initial_state();
-					countSampleCh0 = 0x00U;
+					//countSampleCh0 = 0x00U;
+					//getBackup(&countSampleCh0, &repeat_ch0, &autostartCh0);
 					//FlashErase((uint32_t)pBeginCh0 - countSampleCh0 % 0x20);
-					//countSampleCh0 = 0;
 					print("Pulse state is selected\n\r");
 				}
 				else
@@ -186,14 +187,13 @@ int main()
 						{
 							if (countSampleCh0 < 0x20)
 							{
-								fmc_page_erase((uint32_t) pBeginCh0);
-								//FlashErase((uint32_t) 0x08008800);
+								//fmc_page_erase((uint32_t) pBeginCh0);
 								FlashWrite((uint32_t)pBeginCh0, samplesCh0);
 							}
 							else
 							{
-								fmc_page_erase((uint32_t) pBeginCh0 + ((countSampleCh0 / 0x20)) * FMC_PAGE_SIZE);
-								//FlashErase(((uint32_t) pBeginCh0 ) + (countSampleCh0/0x20) * FMC_PAGE_SIZE);
+								//fmc_page_erase((uint32_t) pBeginCh0 + ((countSampleCh0 / 0x20)) * FMC_PAGE_SIZE);
+								FlashErase(((uint32_t) pBeginCh0 ) + (countSampleCh0/0x20) * FMC_PAGE_SIZE);
 								FlashWrite((uint32_t)pBeginCh0 + ((countSampleCh0 / 0x20)) * 0x20 * sizeof(uint32_t), &samplesCh0[0]);
 							}
 							getBackup(&countSampleCh0, &repeat_ch0, &autostartCh0);

@@ -7,7 +7,7 @@ extern uint32_t* pEndCh0;
 
 extern volatile uint32_t currSampleCh0;
 extern volatile uint32_t countSampleCh0;
-extern uint32_t samplesCh0[32U];
+extern volatile uint32_t samplesCh0[32U];
 extern bool 		autostartCh0;
 
 

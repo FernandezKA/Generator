@@ -80,7 +80,7 @@ void FlashErase(uint32_t pAddr){
 	 while((FMC_STAT0 & FMC_STAT0_BUSY) == FMC_STAT0_BUSY){__NOP();}//Wait while flash is busy
 }
 
-void FlashWrite(uint32_t pAddr, uint32_t* data){
+void FlashWrite(uint32_t pAddr, volatile uint32_t* data){
 	 FMC_KEY0 = 0x45670123;
 	 FMC_KEY0 = 0xCDEF89AB;
 	 while((FMC_STAT0 & FMC_STAT0_BUSY) == FMC_STAT0_BUSY){__NOP();}//Wait while flash is busy
