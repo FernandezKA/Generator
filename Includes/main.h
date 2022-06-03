@@ -40,3 +40,5 @@ static inline void get_div(uint32_t num, volatile uint32_t *CCR, volatile uint32
 #define USART_PC USART0
 #define LED_TIMER TIMER1
 #define SMP_TIMER TIMER0
+
+extern uint8_t initial_state; 

@@ -16,13 +16,13 @@ struct fifo RS232_RX;
 
 void get_initial_state(void)
 {
-	if (parity == 0xFF)
+	if (initial_state == 0x01)
 	{
-		GPIO_OCTL(GPIOB) &= ~(1U << 12);
+		GPIO_OCTL(GPIOB) |= (1U << 12);
 	}
 	else
 	{
-		GPIO_OCTL(GPIOB) |= (1U << 12);
+		GPIO_OCTL(GPIOB) &=~(1U << 12);
 	}
 }
 
@@ -56,7 +56,6 @@ void TIM0_Handler(void)
 			currSampleCh0 = 0;
 			StopGenCh0();
 		}
-		//get_initial_state();
 	}
 }
 

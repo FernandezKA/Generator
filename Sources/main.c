@@ -56,6 +56,8 @@ static inline void print(char *pMsg)
 #endif
 }
 
+uint8_t initial_state; 
+
 int main()
 {
 	SysInit();
@@ -128,6 +130,7 @@ int main()
 			case stop:
 				TIMER_PSC(LED_TIMER) = 0xFFFF;
 				status_gen(CH_1, FALSE);
+				get_initial_state();
 				currSampleCh0 = 0x00U;
 				print("Stop generation\n\r");
 				detCmd = undef;
@@ -165,14 +168,8 @@ int main()
 				if (parity == 0xFF)
 				{ // First byte of packet
 					parity = recData;
-					if (parity == 0x00)
-					{
-						GPIO_OCTL(GPIOB) &= ~(1U << 12);
-					}
-					else
-					{
-						GPIO_OCTL(GPIOB) |= (1U << 12);
-					}
+					initial_state = recData;
+					get_initial_state();
 					FlashErase((uint32_t)pBeginCh0 - countSampleCh0 % 0x20);
 					countSampleCh0 = 0;
 					print("Pulse state is selected\n\r");
@@ -205,7 +202,7 @@ int main()
 
 					char msg[] = "Generator v 1.0 2022-03-19 Samples: * Repeat: * Autostart: *\n\r";
 
-					//					print("Generator v 1.0 2022-03-19\n\r");
+					//print("Generator v 1.0 2022-03-19\n\r");
 					if (countSampleCh0 == 0)
 					{
 						msg[36U] = '0';

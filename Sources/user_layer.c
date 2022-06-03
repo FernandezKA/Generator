@@ -14,7 +14,7 @@ bool ReceiveSample(uint8_t time_part){
 	if(part_received == 0x03U){
 		 recTime |= time_part;
 		 if(recTime != 0){
-		 AddSample(recTime);
+			AddSample(recTime);
 		 }
 		 part_received = 0x00;
 		 return TRUE;
