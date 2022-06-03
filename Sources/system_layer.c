@@ -88,6 +88,7 @@ void AddSample(uint32_t sample)
 	if (countSampleCh0 % 0x20 == 0x1F && countSampleCh0 != 0)
 	{
 		samplesCh0[countSampleCh0++ % 0x20] = sample;
+		fmc_page_erase((uint32_t) pBeginCh0  + countSampleCh0/0x20 * FMC_PAGE_SIZE);
 		FlashWrite((uint32_t)pBeginCh0 + (countSampleCh0) * sizeof(uint32_t) - 0x80, samplesCh0);
 	}
 	else

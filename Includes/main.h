@@ -15,7 +15,7 @@
 // User includes
 #include "fifo.h"
 #define CH_1 0x00U
-
+#define FMC_PAGE_SIZE           ((uint16_t)0x400U)
 static inline void get_div(uint32_t num, volatile uint32_t *CCR, volatile uint32_t *CREP, volatile uint32_t *PSC)
 {
 	if (num < 0xFFFF) //mS, that less 0xFFFF 
