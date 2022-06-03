@@ -174,7 +174,7 @@ int main()
 					parity = recData;
 					initial_state = recData;
 					get_initial_state();
-					//countSampleCh0 = 0x00U;
+					countSampleCh0 = 0x00U;
 					//getBackup(&countSampleCh0, &repeat_ch0, &autostartCh0);
 					//FlashErase((uint32_t)pBeginCh0 - countSampleCh0 % 0x20);
 					print("Pulse state is selected\n\r");
