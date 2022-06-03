@@ -116,29 +116,32 @@ int main()
 
 			case start:
 				TIMER_PSC(LED_TIMER) = 0x3FFF;
-				status_gen(recData, TRUE);
+				status_gen(CH_1, FALSE);
+				get_initial_state();
+				get_div(GetSample(currSampleCh0, pBeginCh0), &TIMER_CAR(SMP_TIMER), &TIMER_CREP(SMP_TIMER), &TIMER_PSC(SMP_TIMER));
 				print("Start generation\n\r");
-				currSampleCh0 = 0;
-				TimReset();
+				currSampleCh0 = 0U;
+				status_gen(CH_1, TRUE);
 				detCmd = undef;
 				break;
 
 			case stop:
 				TIMER_PSC(LED_TIMER) = 0xFFFF;
-				status_gen(recData, FALSE);
+				status_gen(CH_1, FALSE);
+				currSampleCh0 = 0x00U;
 				print("Stop generation\n\r");
 				detCmd = undef;
 				break;
 
 			case set_repeat:
-				status_repeat(recData, TRUE);
+				status_repeat(CH_1, TRUE);
 				print("Repeat flag set\n\r");
 				getBackup(&countSampleCh0, &repeat_ch0, &autostartCh0);
 				detCmd = undef;
 				break;
 
 			case reset_repeat:
-				status_repeat(recData, FALSE);
+				status_repeat(CH_1, FALSE);
 				print("Repeat flag reset\n\r");
 				getBackup(&countSampleCh0, &repeat_ch0, &autostartCh0);
 				detCmd = undef;
@@ -253,7 +256,6 @@ int main()
 					}
 					arrayGui[2] = (uint8_t)((countSampleCh0 >> 8) & 0xFF);
 					arrayGui[3] = (uint8_t)(countSampleCh0 & 0xFF);
-
 					arrayGui[4] = 0x0D;
 					arrayGui[5] = 0x0A;
 

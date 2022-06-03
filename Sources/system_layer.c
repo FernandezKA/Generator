@@ -2,8 +2,8 @@
 #include "user_layer.h"
 
 uint32_t *pInfo = (uint32_t *)0x08007C00;
-uint32_t *pBeginCh0 = (uint32_t *)0x08008000; // Page 32
-uint32_t *pEndCh0 = (uint32_t *)0x08010000;	  // Page 64
+uint32_t *pBeginCh0 = (uint32_t *)0x08008800; // Page 32
+uint32_t *pEndCh0 = (uint32_t *)0x082FFFFF;	  // Page 64
 bool repeat_ch0 = FALSE;
 bool autostartCh0 = FALSE;
 uint8_t parity = 0xFF;
@@ -14,19 +14,15 @@ volatile uint32_t countSampleCh0 = 0;
 
 struct fifo RS232_RX;
 
-static inline void get_div(uint32_t num, volatile uint32_t *CCR, volatile uint32_t *CREP, volatile uint32_t *PSC)
+void get_initial_state(void)
 {
-	if (num < 0xFFFF)
+	if (parity == 0xFF)
 	{
-		*CCR = num - 1U;
-		*CREP = 0x00U;
-		*PSC = 719;
+		GPIO_OCTL(GPIOB) &= ~(1U << 12);
 	}
 	else
 	{
-		*CCR = num / 1000U;
-		*CREP = 99U;
-		*PSC = 7199;
+		GPIO_OCTL(GPIOB) |= (1U << 12);
 	}
 }
 
@@ -38,56 +34,29 @@ void USART_RX_Handler(uint32_t data)
 
 void TIM0_Handler(void)
 {
-	if (currSampleCh0 < countSampleCh0 - 1U&& countSampleCh0 != 0)
+	if (currSampleCh0 < countSampleCh0 - 1 && countSampleCh0 != 0)
 	{
-//////		if(currSampleCh0 == 0x00U){
-//////			if (parity != 0x00)
-//////			{
-//////						GPIO_OCTL(GPIOB) &= ~(1U << 12);
-//////			}
-//////			else
-//////			{
-//////					  GPIO_OCTL(GPIOB) |= (1U << 12);
-//////			}
-//////		}
 		GPIO_OCTL(GPIOB) ^= (1 << 12);
-		get_div(GetSample(currSampleCh0, pBeginCh0), &TIMER_CAR(SMP_TIMER), &TIMER_CREP(SMP_TIMER), &TIMER_PSC(SMP_TIMER));
-		currSampleCh0++;
+		get_div(GetSample(++currSampleCh0, pBeginCh0), &TIMER_CAR(SMP_TIMER), &TIMER_CREP(SMP_TIMER), &TIMER_PSC(SMP_TIMER));
 		TIMER_CTL0(SMP_TIMER) |= TIMER_CTL0_CEN;
 	}
-	else if (countSampleCh0 - 1U == currSampleCh0 && countSampleCh0 != 0)
+	else if (countSampleCh0 - 1U == currSampleCh0 && countSampleCh0 != 0) // It's last sample from packet
 	{
 		if (repeat_ch0)
 		{
-			get_div(GetSample(currSampleCh0, pBeginCh0), &TIMER_CAR(SMP_TIMER), &TIMER_CREP(SMP_TIMER), &TIMER_PSC(SMP_TIMER));
+			/* set time - set initial state - set zero counter*/
 			currSampleCh0 = 0x00U;
-			//GPIO_OCTL(GPIOB) ^= (1 << 12);
+			get_div(GetSample(currSampleCh0, pBeginCh0), &TIMER_CAR(SMP_TIMER), &TIMER_CREP(SMP_TIMER), &TIMER_PSC(SMP_TIMER));
+			get_initial_state();
 			TIMER_CTL0(SMP_TIMER) |= TIMER_CTL0_CEN;
-			if (parity == 0x00)
-			{
-						GPIO_OCTL(GPIOB) &= ~(1U << 12);
-			}
-			else
-			{
-					  GPIO_OCTL(GPIOB) |= (1U << 12);
-			}
-			//TimReset();
 		}
-		else
+		else // Repeat flag isn't set
 		{
+			GPIO_OCTL(GPIOB) ^= (1 << 12);
 			currSampleCh0 = 0;
 			StopGenCh0();
-			//GPIO_OCTL(GPIOB) ^= (1 << 12);
-			if (parity == 0x00)
-			{
-						GPIO_OCTL(GPIOB) &= ~(1U << 12);
-			}
-			else
-			{
-					  GPIO_OCTL(GPIOB) |= (1U << 12);
-			}
-			//TimReset();
 		}
+		//get_initial_state();
 	}
 }
 
@@ -168,7 +137,7 @@ static inline bool uint32_t_to_bool(uint32_t value)
 	}
 }
 
-void getRestore(uint32_t *cntSamples, bool *repCh0, bool *autostart)
+void getRestore(volatile uint32_t *cntSamples, volatile bool *repCh0, volatile bool *autostart)
 {
 	if (FlashRead(pInfo) != 0xFFFFFFFF)
 	{
@@ -178,7 +147,7 @@ void getRestore(uint32_t *cntSamples, bool *repCh0, bool *autostart)
 	*autostart = uint32_t_to_bool(pInfo[2]);
 }
 
-void getBackup(uint32_t *cntSamples, bool *repCh0, bool *autostart)
+void getBackup(volatile uint32_t *cntSamples, volatile bool *repCh0, volatile bool *autostart)
 {
 	static uint32_t tmpArray[32U];
 	tmpArray[0] = *cntSamples;

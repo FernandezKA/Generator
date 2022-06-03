@@ -26,12 +26,13 @@ void AddSample(uint32_t sample);
 
 bool status_repeat(uint8_t channel, bool state);
 
-void getRestore(uint32_t* cntSamples, bool* repCh0, bool* autostart);
+void getRestore(volatile uint32_t* cntSamples,volatile bool* repCh0,volatile bool* autostart);
 
-void getBackup(uint32_t* cntSamples, bool* repCh0, bool* autostart);
+void getBackup(volatile uint32_t* cntSamples,volatile bool* repCh0,volatile bool* autostart);
 
 void getTimerReset(void);
 
+void get_initial_state(void);
 static inline void TimReset(void){
 	TIMER_CREP(SMP_TIMER) = (uint16_t) 0x00U; 
 	TIMER_CAR(SMP_TIMER) = (uint16_t) 0x01U;
