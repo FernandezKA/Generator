@@ -22,3 +22,13 @@ RTE/Device/GD32F103C8/gd32f10x_rcu.c
 RTE/Device/GD32F103C8/gd32f10x_usart.c
 RTE/Device/GD32F103C8/system_gd32f10x.c
 RTE/Device/GD32F103C8/startup_gd32f10x_hd.s
+Objects/Generator.axf
+*.axf
+*.scvd
+*.iex
+*.axf
+Objects/Generator.axf
+*.crf
+*.crf
+Objects/cdc_core.crf
+Objects/fifo.crf

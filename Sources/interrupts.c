@@ -1,25 +1,38 @@
-
 #include "interrupts.h"
+#include "system_layer.h"
 
-void USART0_IRQHandler(void){
-	 if (usart_flag_get(USART_PC, USART_FLAG_RBNE))
+void USBD_LP_CAN0_RX0_IRQHandler(void)
+{
+	usbd_isr();
+}
+
+void USART0_IRQHandler(void)
+{
+	#ifdef USART 
+	volatile uint32_t usart_stat = USART_STAT(USART_PC);
+	if ((usart_stat & USART_STAT_TC) == USART_STAT_TC)
 	{
-		usart_flag_clear(USART_PC, USART_FLAG_RBNE);
-		Push(&RS232_RX, (uint8_t)usart_data_receive(USART_PC));
-	}
-	else if (usart_flag_get(USART_PC, USART_FLAG_TBE))
-	{
-		if (GetSize(&RS232_RX) != 0)
-		{
-			usart_data_transmit(USART_PC, Pull(&RS232_RX));
-		}
-		else
-		{
-			usart_interrupt_disable(USART_PC, USART_INT_TBE);
-		}
+		USART_RX_Handler(usart_data_receive(USART_PC));
 	}
 	else
 	{
 		USART_STAT(USART_PC) = 0;
 	}
+	#else 
+	 while(1){};
+	#endif 
+}
+
+// Used for indicate activty
+void TIMER1_IRQHandler(void)
+{
+	timer_interrupt_flag_clear(LED_TIMER, TIMER_INT_FLAG_UP);
+	GPIO_OCTL(GPIOC) ^= (1 << 13);
+}
+
+// Used for definition freq. of sampling
+void TIMER0_UP_IRQHandler(void)
+{
+	timer_interrupt_flag_clear(SMP_TIMER, TIMER_INT_FLAG_UP);
+	TIM0_Handler();
 }
